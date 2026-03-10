@@ -3,14 +3,16 @@ import { Link, useLocation } from 'react-router-dom'
 
 const PRIMARY_LINKS = [
   { to: '/', label: 'Dashboard' },
-  { to: '/scores', label: 'Scores' },
-  { to: '/analytics', label: 'Analytics' },
   { to: '/progression', label: 'Progress' },
+  { to: '/analytics', label: 'Analytics' },
   { to: '/journal', label: 'Journal' },
-  { to: '/log', label: 'Log' },
 ]
 
+const LOG_LINK = { to: '/log', label: 'Log Workout' }
+
 const SECONDARY_LINKS = [
+  { to: '/scores', label: 'Scores' },
+  { to: '/achievements', label: 'Character' },
   { to: '/compliance', label: 'Compliance' },
   { to: '/frequency', label: 'Frequency' },
   { to: '/amrap', label: 'AMRAP' },
@@ -19,7 +21,6 @@ const SECONDARY_LINKS = [
   { to: '/muscles', label: 'Muscles' },
   { to: '/overall', label: 'Overall' },
   { to: '/goals', label: 'Goals' },
-  { to: '/achievements', label: 'Achievements' },
 ]
 
 export default function NavBar() {
@@ -65,6 +66,8 @@ export default function NavBar() {
               </div>
             )}
           </div>
+
+          <Link to={LOG_LINK.to} className="navbar-log-btn">{LOG_LINK.label}</Link>
         </div>
 
         <button className="navbar-hamburger" onClick={() => setMobileOpen(true)} aria-label="Open menu">☰</button>
@@ -76,6 +79,9 @@ export default function NavBar() {
           <button className="navbar-mobile-close" onClick={() => setMobileOpen(false)} aria-label="Close menu">✕</button>
         </div>
         <div className="navbar-mobile-links">
+          <div style={{ padding: '0.75rem 1.5rem' }}>
+            <Link to={LOG_LINK.to} className="navbar-log-btn" style={{ display: 'block', textAlign: 'center' }} onClick={() => setMobileOpen(false)}>{LOG_LINK.label}</Link>
+          </div>
           <div className="navbar-mobile-section">Main</div>
           {PRIMARY_LINKS.map((link) => (
             <Link key={link.to} to={link.to} className={`navbar-mobile-link${isActive(link.to) ? ' active' : ''}`} onClick={() => setMobileOpen(false)}>{link.label}</Link>

@@ -1,5 +1,6 @@
 import { type ReactNode, type DragEvent, useState, useCallback } from 'react'
 import NavBar from './NavBar'
+import AchievementToast from './AchievementToast'
 import { useLiftsContext } from '../lib/LiftsContext'
 
 function DemoBanner({ isDemo }: { isDemo: boolean }) {
@@ -51,6 +52,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           Drop CSV to load your training data
         </div>
       )}
+      <AchievementToast />
       <main className="page">
         {children}
       </main>

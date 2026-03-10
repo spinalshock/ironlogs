@@ -4,7 +4,7 @@ import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseCSV, validateDataset } from '@ironlogs/csv-parser';
 import {
-  estimate1RM, calcLiftScore, calcOverallScore,
+  calcLiftScore, calcOverallScore,
   groupByDay, getLatestBodyweight, getBestRecentSets,
   getAllStrengthVelocities, detectPlateaus, calcFatigue,
   findPRs, getUniqueLifts,

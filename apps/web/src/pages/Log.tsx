@@ -148,7 +148,7 @@ function createEmptyExercise(lift: string): WorkoutExercise {
 }
 
 export default function Log() {
-  const { entries, loading } = useLifts();
+  const { entries, loading, refreshLocalLifts } = useLifts();
   const [program, setProgram] = useState<ProgramDay[] | null>(null);
   const [selectedDay, setSelectedDay] = useState(0);
   const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
@@ -156,6 +156,7 @@ export default function Log() {
   const [bodyweight, setBodyweight] = useState('');
   const [sleep, setSleep] = useState('');
   const [status, setStatus] = useState('');
+  const [saving, setSaving] = useState(false);
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [showAddExercise, setShowAddExercise] = useState(false);
 
@@ -220,6 +221,8 @@ export default function Log() {
   }, []);
 
   const finishWorkout = async () => {
+    if (saving) return;
+
     const completedSets = exercises.flatMap(ex =>
       ex.sets.filter(s => s.done).map(s => ({
         date,
@@ -239,12 +242,16 @@ export default function Log() {
       return;
     }
 
+    setSaving(true);
     try {
       for (const set of completedSets) await addLift(set);
+      await refreshLocalLifts();
       setStatus(`Workout saved! ${completedSets.length} sets logged.`);
       setTimeout(() => setStatus(''), 3000);
     } catch {
       setStatus('Error saving workout');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -279,7 +286,9 @@ export default function Log() {
           <div className="text-text-muted text-sm">{program[selectedDay].label}</div>
         </div>
         {workoutStarted && (
-          <button onClick={finishWorkout} className="btn-primary px-5 py-2">Finish</button>
+          <button onClick={finishWorkout} disabled={saving} className="btn-primary px-5 py-2" style={saving ? { opacity: 0.5 } : undefined}>
+            {saving ? 'Saving...' : 'Finish'}
+          </button>
         )}
       </div>
 
@@ -410,7 +419,9 @@ export default function Log() {
 
       {/* Finish + Export */}
       <div className="flex gap-3 mb-4">
-        <button onClick={finishWorkout} className="btn-primary flex-1">Finish Workout ({totalCompleted} sets)</button>
+        <button onClick={finishWorkout} disabled={saving} className="btn-primary flex-1" style={saving ? { opacity: 0.5 } : undefined}>
+          {saving ? 'Saving...' : `Finish Workout (${totalCompleted} sets)`}
+        </button>
         <button onClick={handleExport} className="btn-secondary">Export CSV</button>
       </div>
 

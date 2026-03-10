@@ -1,33 +1,12 @@
-import { useState, useEffect } from 'react';
-import type { LiftEntry } from '@ironlogs/core';
-import { parseCSV } from '@ironlogs/csv-parser';
+import { useLiftsContext } from './LiftsContext';
 
 /**
- * React hook to load lift entries from CSV.
- * This is the only browser-specific part — all analytics are in @ironlogs/analytics.
+ * React hook to access lift entries (CSV + locally logged via IndexedDB).
+ * All pages use this hook. Data is provided by LiftsProvider in main.tsx.
  */
 export function useLifts() {
-  const [entries, setEntries] = useState<LiftEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isDemo, setIsDemo] = useState(true);
-
-  useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}data/lifts.csv`)
-      .then((r) => r.text())
-      .then((text) => {
-        const result = parseCSV(text);
-        setEntries(result.entries);
-        setLoading(false);
-      });
-  }, []);
-
-  const loadCSV = (text: string) => {
-    const result = parseCSV(text);
-    setEntries(result.entries);
-    setIsDemo(false);
-  };
-
-  return { entries, loading, isDemo, loadCSV };
+  const { entries, loading, isDemo, loadCSV, refreshLocalLifts } = useLiftsContext();
+  return { entries, loading, isDemo, loadCSV, refreshLocalLifts };
 }
 
 // Re-export analytics functions so existing pages don't need import changes

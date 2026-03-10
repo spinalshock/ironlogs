@@ -1,6 +1,7 @@
 import type { LiftEntry } from '@ironlogs/core';
-import { calcLiftScore } from '@ironlogs/analytics';
+import { calcLiftScore, estimate1RM } from '@ironlogs/analytics';
 import { getBestRecentSets, getLatestBodyweight, groupByDay } from '@ironlogs/analytics';
+import { normalizeLiftName } from '@ironlogs/csv-parser';
 import { getRank, RANKS } from './ranks.js';
 
 export type AchievementCategory = 'strength' | 'consistency' | 'endurance' | 'program' | 'legendary' | 'secret';
@@ -14,9 +15,19 @@ export interface Achievement {
   check: (entries: LiftEntry[]) => boolean;
 }
 
+/**
+ * Best estimated 1RM across ALL sets (not just progression sets).
+ * Achievements should be earnable from any set type — a 95kg x 10 bench
+ * counts whether it's t1, t2, testing, or accessory.
+ */
 function best1RM(entries: LiftEntry[], lift: string): number {
-  const best = getBestRecentSets(entries);
-  return best[lift]?.estimated1RM ?? 0;
+  let best = 0;
+  for (const e of entries) {
+    if (normalizeLiftName(e.lift) !== lift) continue;
+    const est = estimate1RM(e.weight, e.reps);
+    if (est > best) best = est;
+  }
+  return best;
 }
 
 
