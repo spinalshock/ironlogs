@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { addLift, exportLiftsAsCSV, clearLocalLifts } from '../lib/storage';
 import { normalizeLiftName } from '../lib/scoring';
 import { useLifts, groupByDay } from '../lib/useLifts';
+import { calcXPProfile } from '../lib/gamification';
+import WorkoutComplete from '../components/WorkoutComplete';
 
 interface ProgramSet {
   weight: number;
@@ -159,6 +161,10 @@ export default function Log() {
   const [saving, setSaving] = useState(false);
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [showAddExercise, setShowAddExercise] = useState(false);
+  const [celebration, setCelebration] = useState<{
+    sets: number; xpGained: number; xpBefore: number; xpAfter: number;
+    levelBefore: number; levelAfter: number; progressBefore: number; progressAfter: number; streak: number;
+  } | null>(null);
 
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}data/nsuns-program.json`)
@@ -244,15 +250,46 @@ export default function Log() {
 
     setSaving(true);
     try {
+      // Snapshot XP before saving
+      const xpBefore = calcXPProfile(entries);
+
       for (const set of completedSets) await addLift(set);
       await refreshLocalLifts();
-      setStatus(`Workout saved! ${completedSets.length} sets logged.`);
+
+      // Calculate XP after (entries won't have updated yet, so simulate)
+      const xpAfter = calcXPProfile([...entries, ...completedSets]);
+
+      // Calculate streak (allow 2-day gaps for rest days)
+      const dateSet = new Set(groupByDay(entries).map(s => s.date));
+      dateSet.add(date); // include today's session
+      let streak = 0;
+      let gap = 0;
+      const d = new Date();
+      while (true) {
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        if (dateSet.has(key)) { streak++; gap = 0; }
+        else if (streak === 0) { /* skip leading gap */ }
+        else { gap++; if (gap >= 3) break; }
+        d.setDate(d.getDate() - 1);
+      }
+
+      setCelebration({
+        sets: completedSets.length,
+        xpGained: xpAfter.totalXP - xpBefore.totalXP,
+        xpBefore: xpBefore.totalXP,
+        xpAfter: xpAfter.totalXP,
+        levelBefore: xpBefore.level,
+        levelAfter: xpAfter.level,
+        progressBefore: xpBefore.progressPct / 100,
+        progressAfter: xpAfter.progressPct / 100,
+        streak,
+      });
+
       // Reset page state
       if (program) {
         setExercises(programDayToWorkout(program[selectedDay]));
         setWorkoutStarted(false);
       }
-      setTimeout(() => setStatus(''), 4000);
     } catch {
       setStatus('Error saving workout');
     } finally {
@@ -289,6 +326,9 @@ export default function Log() {
 
   return (
     <div className="max-w-[600px]">
+      {celebration && (
+        <WorkoutComplete {...celebration} onDismiss={() => setCelebration(null)} />
+      )}
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
         <div>

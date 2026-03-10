@@ -61,7 +61,7 @@ export function calcXPProfile(entries: LiftEntry[]): XPProfile {
       const prev = new Date(sortedDates[i - 1] + 'T00:00:00');
       const curr = new Date(sortedDates[i] + 'T00:00:00');
       const diff = Math.round((curr.getTime() - prev.getTime()) / 86400000);
-      currentStreak = diff === 1 ? currentStreak + 1 : 1;
+      currentStreak = diff <= 2 ? currentStreak + 1 : 1;
     }
     streakOnDate.set(sortedDates[i], currentStreak);
   }

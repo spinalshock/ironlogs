@@ -5,7 +5,7 @@ import { calcLiftFatigue } from '../lib/analytics';
 
 interface ProgramSet { weight: number; reps: string | number; }
 interface ProgramLift { lift: string; sets: ProgramSet[]; }
-interface ProgramDay { name: string; label: string; t1: ProgramLift; t2: ProgramLift; accessories: string[]; }
+interface ProgramDay { name: string; label: string; rest?: boolean; t1?: ProgramLift; t2?: ProgramLift; accessories?: string[]; }
 
 const LIFT_LABELS: Record<string, string> = {
   bench: 'Bench Press', squat: 'Squat', deadlift: 'Deadlift', ohp: 'Overhead Press',
@@ -65,6 +65,42 @@ export default function TodaySession() {
   const lastHadOnePlus = lastSession.lifts.some((l) => l.set_type === 't1_amrap' && /programmed\s+1\+/.test(l.notes));
   const nextDayIndex = (detectProgramDay(lastT1Lift, lastHadOnePlus) + 1) % program.days.length;
   const todayProgram = program.days[nextDayIndex];
+
+  if (todayProgram.rest) {
+    const REST_MESSAGES = [
+      'Recovery is where gains are made. Go touch grass.',
+      'Your muscles grow while you rest. Netflix approved.',
+      'No iron today. Your CNS thanks you.',
+      'Deload your brain too. You\'ve earned it.',
+    ];
+    const restMsg = REST_MESSAGES[Math.floor(Math.random() * REST_MESSAGES.length)];
+    // Find the next training day after the rest day
+    let nextTrainingDay: ProgramDay | null = null;
+    for (let offset = 1; offset < program.days.length; offset++) {
+      const candidate = program.days[(nextDayIndex + offset) % program.days.length];
+      if (!candidate.rest) { nextTrainingDay = candidate; break; }
+    }
+    const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    return (
+      <div className="card" style={{ borderTop: '3px solid #4dd0e1' }}>
+        <div className="mb-4">
+          <div className="text-xs opacity-50 uppercase tracking-wider">Next Session</div>
+          <div className="text-xl font-bold" style={{ color: '#4dd0e1' }}>Rest Day</div>
+          <div className="text-sm opacity-60">{todayProgram.name} · {today}</div>
+        </div>
+        <div className="p-3 rounded-md mb-4" style={{ backgroundColor: '#4dd0e110', color: '#b0bec5' }}>
+          <div className="text-base italic">{restMsg}</div>
+        </div>
+        {nextTrainingDay && (
+          <div className="text-sm opacity-50">
+            Up next: <span className="font-medium opacity-70">{nextTrainingDay.name} — {nextTrainingDay.label}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (!todayProgram.t1 || !todayProgram.t2) return <p>Could not load program day.</p>;
 
   const amrapSet = todayProgram.t1.sets.find((s) => typeof s.reps === 'string' && String(s.reps).includes('1+'));
   let prInfo: { currentPR1RM: number; currentPRScore: number; amrapWeight: number; repsNeeded: number } | null = null;
@@ -145,7 +181,7 @@ export default function TodaySession() {
         </div>
       </div>
 
-      {todayProgram.accessories.length > 0 && (
+      {todayProgram.accessories && todayProgram.accessories.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs opacity-50">ACC</span>

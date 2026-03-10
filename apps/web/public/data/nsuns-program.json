@@ -92,6 +92,11 @@
         {"weight": 45, "reps": 3}, {"weight": 45, "reps": 3}, {"weight": 45, "reps": 3}
       ]},
       "accessories": ["Farmer's Walk"]
+    },
+    {
+      "name": "Day 7",
+      "label": "Rest Day",
+      "rest": true
     }
   ]
 }

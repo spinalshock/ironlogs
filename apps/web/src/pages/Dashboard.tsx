@@ -67,11 +67,16 @@ export default function Dashboard() {
   const today = new Date();
   const dateSet = new Set(sessions.map(s => s.date));
   const d = new Date(today);
+  let gap = 0;
   while (true) {
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    if (dateSet.has(key)) { streak++; d.setDate(d.getDate() - 1); }
+    if (dateSet.has(key)) { streak++; gap = 0; d.setDate(d.getDate() - 1); }
     else if (streak === 0) { d.setDate(d.getDate() - 1); }
-    else { break; }
+    else {
+      gap++;
+      if (gap >= 3) break;
+      d.setDate(d.getDate() - 1);
+    }
   }
 
   return (
