@@ -130,14 +130,16 @@ export default function Frequency() {
         </svg>
       </div>
 
-      {hoveredInfo && (
-        <div className="text-sm mt-2 opacity-80">
-          <strong>{hoveredInfo.date}</strong>
-          {hoveredInfo.tonnage > 0
-            ? ` — ${(hoveredInfo.tonnage / 1000).toFixed(1)} tons total (${hoveredInfo.lifts.join(', ')})`
-            : ' — Rest day'}
-        </div>
-      )}
+      <div className="text-sm mt-2 h-5" style={{ opacity: hoveredInfo ? 0.8 : 0 }}>
+        {hoveredInfo && (
+          <>
+            <strong>{hoveredInfo.date}</strong>
+            {hoveredInfo.tonnage > 0
+              ? ` — ${(hoveredInfo.tonnage / 1000).toFixed(1)} tons total (${hoveredInfo.lifts.join(', ')})`
+              : ' — Rest day'}
+          </>
+        )}
+      </div>
 
       <div className="flex items-center gap-1.5 mt-3 text-xs opacity-75">
         <span>Less</span>
@@ -239,11 +241,11 @@ function SleepChart({ entries }: { entries: import('../lib/types').LiftEntry[] }
         </svg>
       </div>
 
-      {hoveredBar !== null && data[hoveredBar] && (
-        <div className="text-sm mt-1 opacity-80">
-          <strong>{data[hoveredBar].date}</strong> — {data[hoveredBar].sleep}h sleep
-        </div>
-      )}
+      <div className="text-sm mt-1 h-5" style={{ opacity: hoveredBar !== null && data[hoveredBar] ? 0.8 : 0 }}>
+        {hoveredBar !== null && data[hoveredBar] && (
+          <><strong>{data[hoveredBar].date}</strong> — {data[hoveredBar].sleep}h sleep</>
+        )}
+      </div>
 
       <div className="flex items-center gap-1.5 mt-2 text-xs opacity-75">
         {[
