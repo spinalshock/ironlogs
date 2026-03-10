@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseCSV } from '../parse.js';
+import { parseCSV, sanitizeField } from '../parse.js';
 
 describe('parseCSV', () => {
   it('parses minimal format (date,lift,weight,reps)', () => {
@@ -120,5 +120,86 @@ describe('parseCSV', () => {
     expect(result.columnsDetected).toContain('weight');
     expect(result.columnsDetected).toContain('reps');
     expect(result.columnsDetected).toContain('bodyweight');
+  });
+});
+
+describe('sanitizeField', () => {
+  it('strips leading = from fields', () => {
+    expect(sanitizeField('=cmd|test')).toBe('cmd|test');
+  });
+
+  it('strips leading + from fields', () => {
+    expect(sanitizeField('+cmd|test')).toBe('cmd|test');
+  });
+
+  it('strips leading - from fields', () => {
+    expect(sanitizeField('-cmd|test')).toBe('cmd|test');
+  });
+
+  it('strips leading @ from fields', () => {
+    expect(sanitizeField('@SUM(A1)')).toBe('SUM(A1)');
+  });
+
+  it('strips leading tab and carriage return', () => {
+    expect(sanitizeField('\t\rmalicious')).toBe('malicious');
+  });
+
+  it('strips stacked injection characters', () => {
+    expect(sanitizeField('=+=@payload')).toBe('payload');
+  });
+
+  it('strips HTML tags from fields', () => {
+    expect(sanitizeField('<script>alert(1)</script>hello')).toBe('alert(1)hello');
+    expect(sanitizeField('good <b>bold</b> text')).toBe('good bold text');
+  });
+
+  it('restricts lift names to safe characters', () => {
+    expect(sanitizeField('bench!@#press', true)).toBe('benchpress');
+    expect(sanitizeField('overhead_press-v2', true)).toBe('overhead_press-v2');
+    expect(sanitizeField('squat 123', true)).toBe('squat 123');
+  });
+
+  it('leaves clean fields unchanged', () => {
+    expect(sanitizeField('felt good')).toBe('felt good');
+    expect(sanitizeField('bench', true)).toBe('bench');
+  });
+});
+
+describe('parseCSV CSV injection sanitization', () => {
+  it('strips injection characters from lift names', () => {
+    const csv = `date,lift,weight,reps
+2026-01-01,=cmd|bench,100,5`;
+    const result = parseCSV(csv);
+    expect(result.entries).toHaveLength(1);
+    expect(result.entries[0].lift).not.toContain('=');
+    expect(result.entries[0].lift).not.toContain('|');
+  });
+
+  it('strips injection characters from notes', () => {
+    const csv = `date,lift,weight,reps,notes
+2026-01-01,bench,100,5,=SUM(A1:A10)`;
+    const result = parseCSV(csv);
+    expect(result.entries[0].notes).toBe('SUM(A1:A10)');
+  });
+
+  it('strips HTML from notes', () => {
+    const csv = `date,lift,weight,reps,notes
+2026-01-01,bench,100,5,<img src=x onerror=alert(1)>great set`;
+    const result = parseCSV(csv);
+    expect(result.entries[0].notes).toBe('great set');
+  });
+
+  it('strips HTML from lift names', () => {
+    const csv = `date,lift,weight,reps
+2026-01-01,<b>bench</b>,100,5`;
+    const result = parseCSV(csv);
+    expect(result.entries[0].lift).toBe('bench');
+  });
+
+  it('handles @ injection in notes', () => {
+    const csv = `date,lift,weight,reps,notes
+2026-01-01,bench,100,5,@SUM(A1)`;
+    const result = parseCSV(csv);
+    expect(result.entries[0].notes).toBe('SUM(A1)');
   });
 });

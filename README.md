@@ -1,10 +1,58 @@
 # IronLogs
 
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Deploy](https://github.com/spinalshock/ironlogs/actions/workflows/deploy.yml/badge.svg)](https://github.com/spinalshock/ironlogs/actions/workflows/deploy.yml)
+
 **IronLogs** is a **local-first strength training analytics engine** and **serverless Progressive Web App** for lifters who want to own their data.
 
 It turns a simple CSV workout log into detailed strength analytics, fatigue monitoring, progress tracking, and gamified training insights — all without accounts, servers, or databases.
 
 Think **Git for strength training logs**.
+
+<!-- TODO: Add demo GIF here -->
+<!-- ![IronLogs Demo](docs/screenshots/demo.gif) -->
+
+---
+
+## Quick Start (No Install)
+
+1. Open **[spinalshock.github.io/ironlogs](https://spinalshock.github.io/ironlogs/)**
+2. Upload your training CSV
+3. See strength trends, PR detection, fatigue indicators, and achievements
+
+No account required. No data leaves your browser.
+
+---
+
+## Why IronLogs Exists
+
+Most workout apps:
+
+- Lock your data behind accounts
+- Require subscriptions for basic analytics
+- Hide insights behind paywalls
+- Export messy, non-standard CSVs
+
+IronLogs solves this:
+
+- **CSV is the source of truth** — a plain text file you own
+- **Everything runs locally** — no servers, no tracking
+- **Analytics are transparent** — open-source math you can verify
+- **Extensible** — add your own analytics via the plugin system
+
+---
+
+## Screenshots
+
+<!-- Replace these placeholders with actual screenshots -->
+
+<!-- ![Dashboard](docs/screenshots/dashboard.png) -->
+<!-- ![Strength Progress](docs/screenshots/progression.png) -->
+<!-- ![Training Heatmap](docs/screenshots/heatmap.png) -->
+<!-- ![Muscle Map](docs/screenshots/muscle-map.png) -->
+<!-- ![Achievements](docs/screenshots/achievements.png) -->
+
+*Screenshots coming soon. See the [live demo](https://spinalshock.github.io/ironlogs/) in the meantime.*
 
 ---
 
@@ -18,20 +66,6 @@ Think **Git for strength training logs**.
 - **Hackable** — designed for developers and data-driven lifters.
 
 Your data stays yours.
-
----
-
-## Live Demo
-
-**[spinalshock.github.io/ironlogs](https://spinalshock.github.io/ironlogs/)**
-
-Open the site and:
-
-- Explore a real training dataset
-- Upload your own CSV
-- Instantly see strength analytics
-
-No account required.
 
 ---
 
@@ -141,7 +175,8 @@ ironlogs/
 │   ├── gamification/         # XP, ranks, achievements, bosses
 │   └── plugin-api/           # Plugin system
 ├── plugins/
-│   └── plugin-nsuns/         # nSuns 5/3/1 program analytics
+│   ├── plugin-nsuns/         # nSuns 5/3/1 program analytics
+│   └── plugin-template/      # Starter template for new plugins
 ├── cli/                      # CLI analytics tool
 └── examples/                 # Example datasets
 ```
@@ -271,13 +306,17 @@ Based on Symmetric Strength's Wilks-based system:
 
 ## Contributing
 
-Contributions are welcome. Areas that need help:
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+Areas that need help:
 
 - New analytics modules
 - Additional program plugins (5/3/1, GZCL, SBS, etc.)
 - Visualization improvements
 - Importer support for more apps
 - Documentation
+
+Check the [Good First Issues](https://github.com/spinalshock/ironlogs/labels/good%20first%20issue) to get started.
 
 ---
 

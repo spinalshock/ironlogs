@@ -9,6 +9,26 @@ export interface ParseResult {
 }
 
 /**
+ * Strip CSV injection characters, HTML tags, and restrict lift names to safe characters.
+ *
+ * - Removes leading characters that could trigger formula execution in spreadsheet
+ *   applications (=, +, -, @, \t, \r).
+ * - Strips HTML tags.
+ * - For lift names, additionally restricts to alphanumeric, spaces, underscores, and hyphens.
+ */
+export function sanitizeField(value: string, isLiftName = false): string {
+  // Strip leading CSV-injection characters (repeatedly, in case of stacking)
+  let sanitized = value.replace(/^[=+\-@\t\r]+/, '');
+  // Strip HTML tags
+  sanitized = sanitized.replace(/<[^>]*>/g, '');
+  if (isLiftName) {
+    // Only allow alphanumeric, spaces, underscores, hyphens
+    sanitized = sanitized.replace(/[^a-zA-Z0-9 _-]/g, '');
+  }
+  return sanitized.trim();
+}
+
+/**
  * Parse raw CSV text into a structured array of lift entries.
  *
  * Supports a flexible schema with auto-detection of column names from the header
@@ -71,12 +91,12 @@ export function parseCSV(text: string): ParseResult {
 
     entries.push({
       date,
-      lift: normalizeLiftName(lift),
+      lift: normalizeLiftName(sanitizeField(lift, true)),
       weight,
       reps,
       bodyweight: mapping.bodyweight ? (parseFloat(row[mapping.bodyweight]) || 0) : 0,
       set_type: mapping.set_type ? (row[mapping.set_type]?.trim().toLowerCase() || '') : '',
-      notes: mapping.notes ? (row[mapping.notes] || '') : '',
+      notes: mapping.notes ? sanitizeField(row[mapping.notes] || '') : '',
       sleep: mapping.sleep ? (parseFloat(row[mapping.sleep]) || 0) : 0,
     });
   }
