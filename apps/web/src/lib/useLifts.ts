@@ -9,6 +9,7 @@ import { parseCSV } from '@ironlogs/csv-parser';
 export function useLifts() {
   const [entries, setEntries] = useState<LiftEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDemo, setIsDemo] = useState(true);
 
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}data/lifts.csv`)
@@ -20,7 +21,13 @@ export function useLifts() {
       });
   }, []);
 
-  return { entries, loading };
+  const loadCSV = (text: string) => {
+    const result = parseCSV(text);
+    setEntries(result.entries);
+    setIsDemo(false);
+  };
+
+  return { entries, loading, isDemo, loadCSV };
 }
 
 // Re-export analytics functions so existing pages don't need import changes

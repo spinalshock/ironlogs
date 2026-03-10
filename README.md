@@ -181,7 +181,34 @@ ironlogs/
 └── examples/                 # Example datasets
 ```
 
-Dependency graph (downward only):
+Data pipeline:
+
+```
+  CSV file (your data)
+       │
+       ▼
+  ┌─────────┐
+  │  Parser  │   Auto-detect columns, normalize lifts
+  └────┬─────┘
+       ▼
+  ┌──────────┐
+  │ Dataset  │   Sort, validate, compute sessions
+  └────┬─────┘
+       ▼
+  ┌───────────┐
+  │ Analytics │   1RM, scoring, fatigue, trends, PRs
+  └────┬──────┘
+       ▼
+  ┌──────────────┐
+  │ Gamification │   XP, ranks, achievements, quests
+  └──────────────┘
+       │
+   ┌───┴───┐
+   ▼       ▼
+  Web     CLI
+```
+
+Package dependency graph (downward only):
 
 ```
 core → csv-parser → analytics → gamification
@@ -194,7 +221,9 @@ core → csv-parser → analytics → gamification
 ## CLI
 
 ```bash
-ironlogs analyze training.csv
+ironlogs analyze training.csv    # Terminal analytics
+ironlogs report training.csv     # Generate static HTML dashboard
+ironlogs validate training.csv   # Check CSV format
 ```
 
 ```
