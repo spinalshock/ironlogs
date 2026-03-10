@@ -1,0 +1,259 @@
+date,bodyweight,lift,weight,reps,set_type,notes,sleep
+2026-02-09,82,bench,20,3,testing,1RM testing day
+2026-02-09,82,bench,25,3,testing,
+2026-02-09,82,bench,30,3,testing,
+2026-02-09,82,bench,35,3,testing,
+2026-02-09,82,bench,40,3,testing,
+2026-02-09,82,bench,45,3,testing,
+2026-02-09,82,bench,50,3,testing,
+2026-02-09,82,bench,55,2,testing,failed 3rd rep
+2026-02-09,82,ohp,20,3,testing,done with dumbbells
+2026-02-09,82,ohp,25,3,testing,done with dumbbells
+2026-02-09,82,ohp,30,3,testing,done with dumbbells
+2026-02-09,82,ohp,35,3,testing,done with dumbbells
+2026-02-09,82,ohp,40,3,testing,done with dumbbells
+2026-02-10,82,deadlift,60,3,testing,1RM testing day
+2026-02-10,82,deadlift,70,3,testing,
+2026-02-10,82,deadlift,80,3,testing,
+2026-02-10,82,deadlift,90,3,testing,
+2026-02-10,82,deadlift,100,1,testing,
+2026-02-10,82,squat,20,3,testing,
+2026-02-10,82,squat,30,3,testing,
+2026-02-10,82,squat,40,3,testing,
+2026-02-10,82,squat,50,3,testing,
+2026-02-11,82,ohp,30,5,t1,wednesday program
+2026-02-11,82,ohp,30,3,t1,
+2026-02-11,82,ohp,35,6,t1_amrap,programmed 1+
+2026-02-11,82,ohp,35,3,t1,
+2026-02-11,82,ohp,30,3,t1,
+2026-02-11,82,ohp,30,3,t1,
+2026-02-11,82,ohp,30,5,t1,
+2026-02-11,82,ohp,25,5,t1,
+2026-02-11,82,ohp,25,6,t1_amrap,programmed 5+
+2026-02-11,82,incline_bench,20,6,t2,
+2026-02-11,82,incline_bench,25,5,t2,
+2026-02-11,82,incline_bench,30,3,t2,
+2026-02-11,82,incline_bench,30,5,t2,
+2026-02-11,82,incline_bench,30,7,t2,
+2026-02-11,82,incline_bench,30,4,t2,
+2026-02-11,82,incline_bench,30,6,t2,
+2026-02-11,82,incline_bench,30,8,t2,
+2026-02-12,82,squat,40,5,t1,thursday program
+2026-02-12,82,squat,45,3,t1,
+2026-02-12,82,squat,50,6,t1_amrap,programmed 1+
+2026-02-12,82,squat,45,3,t1,
+2026-02-12,82,squat,45,3,t1,
+2026-02-12,82,squat,40,3,t1,
+2026-02-12,82,squat,40,5,t1,
+2026-02-12,82,squat,35,5,t1,
+2026-02-12,82,squat,35,10,t1_amrap,programmed 5+
+2026-02-13,82,bench,35,5,t1,friday program
+2026-02-13,82,bench,40,3,t1,
+2026-02-13,82,bench,45,7,t1_amrap,programmed 1+
+2026-02-13,82,bench,45,3,t1,
+2026-02-13,82,bench,40,5,t1,
+2026-02-13,82,bench,40,3,t1,
+2026-02-13,82,bench,35,5,t1,
+2026-02-13,82,bench,35,3,t1,
+2026-02-13,82,bench,30,7,t1_amrap,programmed 5+
+2026-02-13,82,cgbench,30,3,t2,skipped first 2 sets
+2026-02-13,82,cgbench,30,5,t2,
+2026-02-13,82,cgbench,30,7,t2,
+2026-02-13,82,cgbench,30,4,t2,
+2026-02-13,82,cgbench,30,6,t2,
+2026-02-13,82,cgbench,30,8,t2,
+2026-02-16,82,bench,35,8,t1,monday program
+2026-02-16,82,bench,40,6,t1,
+2026-02-16,82,bench,45,4,t1,
+2026-02-16,82,bench,45,4,t1,
+2026-02-16,82,bench,45,4,t1,
+2026-02-16,82,bench,40,5,t1,
+2026-02-16,82,bench,40,5,t1,programmed 6 got 5
+2026-02-16,82,bench,30,8,t1_amrap,programmed 35x8+ did 30x8
+2026-02-16,82,ohp,20,6,t2,
+2026-02-16,82,ohp,25,5,t2,
+2026-02-16,82,ohp,30,3,t2,programmed 25
+2026-02-16,82,ohp,30,3,t2,programmed 25x5
+2026-02-16,82,ohp,30,3,t2,programmed 25x7
+2026-02-21,82,deadlift,65,5,t1,tuesday program
+2026-02-21,82,deadlift,75,3,t1,
+2026-02-21,82,deadlift,85,3,t1_amrap,programmed 1+
+2026-02-21,82,deadlift,80,3,t1,
+2026-02-21,82,deadlift,75,3,t1,
+2026-02-21,82,deadlift,70,3,t1,
+2026-02-21,82,deadlift,65,3,t1,
+2026-02-21,82,deadlift,60,3,t1_amrap,programmed 3+
+2026-02-21,82,front_squat,20,5,t2,
+2026-02-21,82,front_squat,25,5,t2,
+2026-02-21,82,front_squat,30,3,t2,
+2026-02-21,82,front_squat,30,5,t2,
+2026-02-21,82,front_squat,30,7,t2,
+2026-02-21,82,front_squat,30,4,t2,
+2026-02-21,82,front_squat,30,6,t2,
+2026-02-21,82,front_squat,30,8,t2,
+2026-02-23,82,ohp,30,5,t1,wednesday program
+2026-02-23,82,ohp,35,3,t1,
+2026-02-23,82,ohp,40,5,t1_amrap,programmed 1+
+2026-02-23,82,ohp,35,3,t1,
+2026-02-23,82,ohp,35,3,t1,
+2026-02-23,82,ohp,30,3,t1,
+2026-02-23,82,ohp,30,5,t1,
+2026-02-23,82,ohp,30,5,t1,
+2026-02-23,82,ohp,25,10,t1_amrap,programmed 5+
+2026-02-23,82,incline_bench,20,5,t2,
+2026-02-23,82,incline_bench,25,5,t2,programmed 30
+2026-02-23,82,incline_bench,30,5,t2,programmed 35x3
+2026-02-23,82,incline_bench,35,8,t2,programmed 35x5
+2026-02-23,82,incline_bench,40,5,t2,programmed 35x7
+2026-02-23,82,incline_bench,40,3,t2,programmed 35x4
+2026-02-23,82,incline_bench,35,5,t2,programmed 35x6
+2026-02-23,82,incline_bench,35,5,t2,programmed 35x8
+2026-02-24,82,squat,40,5,t1,thursday program
+2026-02-24,82,squat,45,3,t1,
+2026-02-24,82,squat,50,10,t1_amrap,programmed 1+
+2026-02-24,82,squat,50,3,t1,
+2026-02-24,82,squat,45,3,t1,
+2026-02-24,82,squat,45,3,t1,
+2026-02-24,82,squat,40,5,t1,
+2026-02-24,82,squat,40,5,t1,
+2026-02-27,82,ohp,35,5,t1,wednesday program
+2026-02-27,82,ohp,40,3,t1,
+2026-02-27,82,ohp,45,4,t1_amrap,programmed 1+
+2026-02-27,82,ohp,40,3,t1,
+2026-02-27,82,ohp,40,3,t1,
+2026-02-27,82,ohp,35,3,t1,
+2026-02-27,82,ohp,35,3,t1,
+2026-02-27,82,ohp,30,5,t1,
+2026-02-27,82,incline_bench,20,5,t2,
+2026-02-27,82,incline_bench,30,5,t2,
+2026-02-27,82,incline_bench,35,3,t2,
+2026-02-27,82,incline_bench,35,5,t2,
+2026-02-27,82,incline_bench,35,7,t2,
+2026-02-27,82,incline_bench,35,4,t2,
+2026-02-27,82,incline_bench,35,6,t2,
+2026-02-27,82,incline_bench,35,8,t2,
+2026-02-28,82,squat,45,5,t1,thursday program
+2026-02-28,82,squat,50,3,t1,
+2026-02-28,82,squat,55,10,t1_amrap,programmed 1+
+2026-02-28,82,squat,50,3,t1,
+2026-02-28,82,squat,50,3,t1,
+2026-02-28,82,squat,45,3,t1,
+2026-02-28,82,squat,45,5,t1,
+2026-02-28,82,squat,40,5,t1,
+2026-02-28,82,squat,35,10,t1_amrap,programmed 5+
+2026-03-01,82,bench,40,5,t1,friday program
+2026-03-01,82,bench,45,3,t1,
+2026-03-01,82,bench,50,10,t1_amrap,programmed 1+
+2026-03-01,82,bench,50,3,t1,
+2026-03-01,82,bench,45,5,t1,
+2026-03-01,82,bench,45,3,t1,
+2026-03-01,82,bench,40,5,t1,
+2026-03-01,82,bench,40,3,t1,
+2026-03-01,82,bench,35,10,t1_amrap,programmed 5+
+2026-03-01,82,cgbench,20,6,t2,
+2026-03-01,82,cgbench,30,5,t2,
+2026-03-01,82,cgbench,35,3,t2,
+2026-03-01,82,cgbench,35,5,t2,
+2026-03-01,82,cgbench,35,7,t2,
+2026-03-01,82,cgbench,35,4,t2,
+2026-03-01,82,cgbench,35,6,t2,
+2026-03-01,82,cgbench,35,8,t2,
+2026-03-02,82,deadlift,35,10,t1,saturday program - went off program
+2026-03-02,82,deadlift,70,5,t1,
+2026-03-02,82,deadlift,85,5,t1,
+2026-03-02,82,deadlift,100,3,testing,heavier than programmed
+2026-03-02,82,deadlift,100,3,t1,
+2026-03-02,82,deadlift,90,3,t1,
+2026-03-02,82,deadlift,80,5,t1,
+2026-03-02,82,deadlift,70,5,t1,
+2026-03-05,82,bench,35,8,t1,monday program
+2026-03-05,82,bench,45,6,t1,
+2026-03-05,82,bench,50,4,t1,
+2026-03-05,82,bench,50,4,t1,
+2026-03-05,82,bench,50,4,t1,
+2026-03-05,82,bench,45,5,t1,
+2026-03-05,82,bench,45,6,t1,
+2026-03-05,82,bench,40,7,t1,
+2026-03-05,82,bench,35,10,t1_amrap,
+2026-03-05,82,ohp,25,6,t2,
+2026-03-05,82,ohp,30,5,t2,
+2026-03-05,82,ohp,35,3,t2,
+2026-03-05,82,ohp,35,5,t2,
+2026-03-05,82,ohp,35,7,t2,
+2026-03-05,82,ohp,35,4,t2,
+2026-03-05,82,ohp,35,6,t2,
+2026-03-05,82,ohp,35,8,t2,
+2026-03-06,82,deadlift,75,5,t1,tuesday program
+2026-03-06,82,deadlift,85,3,t1,
+2026-03-06,82,deadlift,95,6,t1_amrap,programmed 1+
+2026-03-06,82,deadlift,90,3,t1,
+2026-03-06,82,deadlift,85,3,t1,
+2026-03-06,82,deadlift,80,3,t1,
+2026-03-06,82,deadlift,75,3,t1,
+2026-03-06,82,deadlift,70,3,t1,
+2026-03-06,82,deadlift,65,8,t1_amrap,programmed 3+
+2026-03-06,82,front_squat,20,5,t2,
+2026-03-06,82,front_squat,25,5,t2,
+2026-03-06,82,front_squat,35,3,t2,
+2026-03-06,82,front_squat,35,5,t2,
+2026-03-06,82,front_squat,35,7,t2,
+2026-03-06,82,front_squat,35,4,t2,
+2026-03-06,82,front_squat,35,6,t2,
+2026-03-06,82,front_squat,35,8,t2,
+2026-03-07,81.55,ohp,35,5,t1,
+2026-03-07,81.55,ohp,40,3,t1,
+2026-03-07,81.55,ohp,45,5,t1_amrap,programmed 1+
+2026-03-07,81.55,ohp,45,3,t1,
+2026-03-07,81.55,ohp,40,5,t1,programmed 3
+2026-03-07,81.55,ohp,40,5,t1,programmed 3
+2026-03-07,81.55,ohp,35,5,t1,
+2026-03-07,81.55,ohp,35,5,t1,
+2026-03-07,81.55,ohp,30,10,t1_amrap,programmed 5+
+2026-03-07,81.55,incline_bench,25,6,t2,
+2026-03-07,81.55,incline_bench,30,5,t2,
+2026-03-07,81.55,incline_bench,35,3,t2,
+2026-03-07,81.55,incline_bench,35,5,t2,
+2026-03-07,81.55,incline_bench,35,7,t2,
+2026-03-07,81.55,incline_bench,35,4,t2,
+2026-03-07,81.55,incline_bench,35,6,t2,
+2026-03-07,81.55,incline_bench,35,8,t2,
+2026-03-07,81.55,face_pulls,50,10,accessory,
+2026-03-07,81.55,face_pulls,57,7,accessory,
+2026-03-07,81.55,seated_row,40,10,accessory,
+2026-03-07,81.55,seated_row,40,10,accessory,
+2026-03-08,82.05,squat,45,5,t1,
+2026-03-08,82.05,squat,50,3,t1,
+2026-03-08,82.05,squat,55,3,t1,
+2026-03-08,82.05,squat,60,3,testing,
+2026-03-08,82.05,squat,65,3,testing,
+2026-03-08,82.05,squat,70,3,testing,
+2026-03-08,82.05,squat,75,3,testing,
+2026-03-08,82.05,squat,80,3,testing,
+2026-03-08,82.05,squat,85,3,testing,
+2026-03-08,82.05,sumo_deadlift,40,5,t2,
+2026-03-08,82.05,sumo_deadlift,55,5,t2,
+2026-03-08,82.05,sumo_deadlift,70,3,t2,
+2026-03-08,82.05,sumo_deadlift,70,5,t2,
+2026-03-08,82.05,sumo_deadlift,70,7,t2,
+2026-03-08,82.05,sumo_deadlift,70,6,t2,
+2026-03-09,81.55,bench,45,5,t1,,6
+2026-03-09,81.55,bench,50,5,t1,,6
+2026-03-09,81.55,bench,55,8,t1_amrap,programmed 1+,6
+2026-03-09,81.55,bench,50,3,t1,,6
+2026-03-09,81.55,bench,50,5,t1,,6
+2026-03-09,81.55,bench,45,3,t1,,6
+2026-03-09,81.55,bench,45,5,t1,,6
+2026-03-09,81.55,bench,40,3,t1,,6
+2026-03-09,81.55,bench,35,10,t1_amrap,programmed 5+,6
+2026-03-09,81.55,cgbench,25,6,t2,,6
+2026-03-09,81.55,cgbench,30,5,t2,,6
+2026-03-09,81.55,cgbench,35,3,t2,,6
+2026-03-09,81.55,cgbench,35,5,t2,,6
+2026-03-09,81.55,cgbench,35,7,t2,,6
+2026-03-09,81.55,cgbench,35,4,t2,,6
+2026-03-09,81.55,cgbench,35,6,t2,,6
+2026-03-09,81.55,cgbench,35,8,t2,,6
+2026-03-09,81.55,face_pulls,50,10,accessory,,6
+2026-03-09,81.55,face_pulls,57,10,accessory,,6
+2026-03-09,81.55,seated_row,40,7,accessory,,6
+2026-03-09,81.55,seated_row,40,7,accessory,,6

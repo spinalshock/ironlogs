@@ -1,0 +1,97 @@
+{
+  "program": "nSuns 5-Day LP",
+  "source": "Google Sheets - Copy of nSuns Linear Progression (LP) Complete Bundle",
+  "sheetId": "1gGmA4FA4u358K8M_CvrVgLyogtU5Lb8cz9KVS7UEOrw",
+  "tab": "OM",
+  "days": [
+    {
+      "name": "Day 1",
+      "label": "Volume Bench",
+      "t1": { "lift": "bench", "sets": [
+        {"weight": 35, "reps": 8}, {"weight": 45, "reps": 6}, {"weight": 50, "reps": 4},
+        {"weight": 50, "reps": 4}, {"weight": 50, "reps": 4}, {"weight": 45, "reps": 5},
+        {"weight": 45, "reps": 6}, {"weight": 40, "reps": 7}, {"weight": 35, "reps": "8+"}
+      ]},
+      "t2": { "lift": "ohp", "sets": [
+        {"weight": 25, "reps": 6}, {"weight": 30, "reps": 5}, {"weight": 35, "reps": 3},
+        {"weight": 35, "reps": 5}, {"weight": 35, "reps": 7}, {"weight": 35, "reps": 4},
+        {"weight": 35, "reps": 6}, {"weight": 35, "reps": 8}
+      ]},
+      "accessories": ["Face Pulls"]
+    },
+    {
+      "name": "Day 2",
+      "label": "Heavy Deadlift",
+      "t1": { "lift": "deadlift", "sets": [
+        {"weight": 80, "reps": 5}, {"weight": 90, "reps": 3}, {"weight": 100, "reps": "1+"},
+        {"weight": 95, "reps": 3}, {"weight": 90, "reps": 3}, {"weight": 85, "reps": 3},
+        {"weight": 80, "reps": 3}, {"weight": 75, "reps": 3}, {"weight": 70, "reps": "3+"}
+      ]},
+      "t2": { "lift": "front_squat", "sets": [
+        {"weight": 30, "reps": 5}, {"weight": 35, "reps": 5}, {"weight": 45, "reps": 3},
+        {"weight": 45, "reps": 5}, {"weight": 45, "reps": 7}, {"weight": 45, "reps": 4},
+        {"weight": 45, "reps": 6}, {"weight": 45, "reps": 8}
+      ]},
+      "accessories": ["Farmer's Walk"]
+    },
+    {
+      "name": "Day 3",
+      "label": "Heavy OHP",
+      "t1": { "lift": "ohp", "sets": [
+        {"weight": 40, "reps": 5}, {"weight": 45, "reps": 3}, {"weight": 50, "reps": "1+"},
+        {"weight": 45, "reps": 3}, {"weight": 45, "reps": 3}, {"weight": 40, "reps": 3},
+        {"weight": 40, "reps": 5}, {"weight": 35, "reps": 5}, {"weight": 35, "reps": "5+"}
+      ]},
+      "t2": { "lift": "incline_bench", "sets": [
+        {"weight": 25, "reps": 6}, {"weight": 30, "reps": 5}, {"weight": 35, "reps": 3},
+        {"weight": 35, "reps": 5}, {"weight": 35, "reps": 7}, {"weight": 35, "reps": 4},
+        {"weight": 35, "reps": 6}, {"weight": 35, "reps": 8}
+      ]},
+      "accessories": ["Face Pulls", "Seated Row"]
+    },
+    {
+      "name": "Day 4",
+      "label": "Heavy Squat",
+      "t1": { "lift": "squat", "sets": [
+        {"weight": 60, "reps": 5}, {"weight": 70, "reps": 3}, {"weight": 75, "reps": "1+"},
+        {"weight": 70, "reps": 3}, {"weight": 70, "reps": 3}, {"weight": 65, "reps": 3},
+        {"weight": 60, "reps": 5}, {"weight": 55, "reps": 5}, {"weight": 50, "reps": "5+"}
+      ]},
+      "t2": { "lift": "sumo_deadlift", "sets": [
+        {"weight": 55, "reps": 5}, {"weight": 65, "reps": 5}, {"weight": 75, "reps": 3},
+        {"weight": 75, "reps": 5}, {"weight": 75, "reps": 7}, {"weight": 75, "reps": 4},
+        {"weight": 75, "reps": 6}, {"weight": 75, "reps": 8}
+      ]},
+      "accessories": ["Seated Row"]
+    },
+    {
+      "name": "Day 5",
+      "label": "Heavy Bench",
+      "t1": { "lift": "bench", "sets": [
+        {"weight": 45, "reps": 5}, {"weight": 50, "reps": 3}, {"weight": 55, "reps": "1+"},
+        {"weight": 50, "reps": 3}, {"weight": 50, "reps": 5}, {"weight": 45, "reps": 3},
+        {"weight": 45, "reps": 5}, {"weight": 40, "reps": 3}, {"weight": 35, "reps": "5+"}
+      ]},
+      "t2": { "lift": "cgbench", "sets": [
+        {"weight": 25, "reps": 6}, {"weight": 30, "reps": 5}, {"weight": 35, "reps": 3},
+        {"weight": 35, "reps": 5}, {"weight": 35, "reps": 7}, {"weight": 35, "reps": 4},
+        {"weight": 35, "reps": 6}, {"weight": 35, "reps": 8}
+      ]},
+      "accessories": ["Face Pulls", "Seated Row"]
+    },
+    {
+      "name": "Day 6",
+      "label": "Light Deadlift",
+      "t1": { "lift": "deadlift", "sets": [
+        {"weight": 75, "reps": 3}, {"weight": 75, "reps": 3}, {"weight": 75, "reps": "3+"},
+        {"weight": 75, "reps": 3}, {"weight": 75, "reps": 3}, {"weight": 75, "reps": 3},
+        {"weight": 75, "reps": 3}, {"weight": 75, "reps": 3}
+      ]},
+      "t2": { "lift": "front_squat", "sets": [
+        {"weight": 45, "reps": 3}, {"weight": 45, "reps": 3}, {"weight": 45, "reps": 3},
+        {"weight": 45, "reps": 3}, {"weight": 45, "reps": 3}, {"weight": 45, "reps": 3}
+      ]},
+      "accessories": ["Farmer's Walk"]
+    }
+  ]
+}

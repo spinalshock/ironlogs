@@ -1,0 +1,13 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/csv-parser" },
+    { "path": "packages/analytics" },
+    { "path": "packages/gamification" },
+    { "path": "packages/plugin-api" },
+    { "path": "plugins/nsuns" },
+    { "path": "apps/web" },
+    { "path": "cli" }
+  ]
+}
