@@ -65,40 +65,29 @@ function ReadinessCard({ readiness }: { readiness: ReadinessScore }) {
   return (
     <div className="card mb-6">
       <h3 className="mb-4">Readiness Score</h3>
-      <div className="flex items-center gap-8 flex-wrap">
-        <div className="flex flex-col items-center">
-          <svg width={140} height={140} viewBox="0 0 140 140">
-            <circle cx={70} cy={70} r={radius} fill="none" stroke="rgba(128,128,128,0.15)" strokeWidth={10} />
-            <circle
-              cx={70} cy={70} r={radius} fill="none"
-              stroke={readiness.color} strokeWidth={10}
-              strokeDasharray={circumference}
-              strokeDashoffset={circumference - progress}
-              strokeLinecap="round"
-              transform="rotate(-90 70 70)"
-            />
-            <text x={70} y={64} textAnchor="middle" fill={readiness.color} fontSize={32} fontWeight="bold">
-              {readiness.score}
-            </text>
-            <text x={70} y={86} textAnchor="middle" fill="var(--color-text-muted)" fontSize={13}>
-              {readiness.label}
-            </text>
-          </svg>
-        </div>
+      <div className="flex flex-col items-center gap-4">
+        <svg width={140} height={140} viewBox="0 0 140 140">
+          <circle cx={70} cy={70} r={radius} fill="none" stroke="rgba(128,128,128,0.15)" strokeWidth={10} />
+          <circle
+            cx={70} cy={70} r={radius} fill="none"
+            stroke={readiness.color} strokeWidth={10}
+            strokeDasharray={circumference}
+            strokeDashoffset={circumference - progress}
+            strokeLinecap="round"
+            transform="rotate(-90 70 70)"
+          />
+          <text x={70} y={64} textAnchor="middle" fill={readiness.color} fontSize={32} fontWeight="bold">
+            {readiness.score}
+          </text>
+          <text x={70} y={86} textAnchor="middle" fill="var(--color-text-muted)" fontSize={13}>
+            {readiness.label}
+          </text>
+        </svg>
 
-        <div className="flex gap-6 flex-wrap">
-          <div className="stat-card">
-            <div className="label">Sleep</div>
-            <div className="value">{readiness.sleepComponent}%</div>
-          </div>
-          <div className="stat-card">
-            <div className="label">Fatigue</div>
-            <div className="value">{readiness.fatigueComponent}%</div>
-          </div>
-          <div className="stat-card">
-            <div className="label">AMRAP Trend</div>
-            <div className="value">{readiness.amrapComponent}%</div>
-          </div>
+        <div className="flex gap-3 flex-wrap justify-center">
+          <div className="stat-card"><div className="label">Sleep</div><div className="value">{readiness.sleepComponent}%</div></div>
+          <div className="stat-card"><div className="label">Fatigue</div><div className="value">{readiness.fatigueComponent}%</div></div>
+          <div className="stat-card"><div className="label">AMRAP Trend</div><div className="value">{readiness.amrapComponent}%</div></div>
         </div>
       </div>
     </div>
@@ -213,7 +202,7 @@ function LiftFatigueCards({ fatigueData }: { fatigueData: LiftFatigue[] }) {
   return (
     <div className="card mb-6">
       <h3 className="mb-4">Lift-Specific Fatigue</h3>
-      <div className="flex gap-4 flex-wrap">
+      <div className="flex gap-3 flex-wrap justify-center">
         {fatigueData.map((f) => (
           <div
             key={f.lift}
@@ -224,7 +213,7 @@ function LiftFatigueCards({ fatigueData }: { fatigueData: LiftFatigue[] }) {
             <div className="value" style={{ color: f.color }}>{f.acwr}</div>
             <div className="text-xs mt-1" style={{ color: f.color }}>{f.label}</div>
             <div className="text-xs opacity-60 mt-1">
-              A: {(f.acuteEWMA / 1000).toFixed(1)}t | C: {(f.chronicEWMA / 1000).toFixed(1)}t
+              A: {(f.acuteEWMA / 1000).toFixed(1)} tons | C: {(f.chronicEWMA / 1000).toFixed(1)} tons
             </div>
           </div>
         ))}
@@ -248,7 +237,7 @@ function StrengthVelocityCards({ velocities }: { velocities: StrengthVelocity[] 
   return (
     <div className="card mb-6">
       <h3 className="mb-4">Strength Velocity</h3>
-      <div className="flex gap-4 flex-wrap">
+      <div className="flex gap-3 flex-wrap justify-center">
         {velocities.map((v) => (
           <div key={v.lift} className="stat-card" style={{ minWidth: '160px' }}>
             <div className="label">{liftLabel(v.lift)}</div>
@@ -280,7 +269,7 @@ function PlateauAlerts({ plateaus }: { plateaus: PlateauInfo[] }) {
   return (
     <div className="card mb-6">
       <h3 className="mb-4">Plateau Alerts</h3>
-      <div className="flex gap-4 flex-wrap">
+      <div className="flex gap-3 flex-wrap justify-center">
         {active.map((p) => (
           <div
             key={p.lift}
@@ -316,42 +305,23 @@ function StrengthBalanceTable({ ratios }: { ratios: StrengthRatio[] }) {
 
   return (
     <div className="card mb-6">
-      <h3 className="mb-4">Strength Balance Ratios</h3>
-      <div className="overflow-x-auto">
-        <table>
-          <thead>
-            <tr>
-              <th>Ratio</th>
-              <th>Actual</th>
-              <th>Target</th>
-              <th>Deviation</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ratios.map((r) => (
-              <tr key={r.name}>
-                <td>{r.name}</td>
-                <td>{r.actual}</td>
-                <td>{r.target}</td>
-                <td style={{ color: RATIO_STATUS_COLORS[r.status] }}>
-                  {r.deviation > 0 ? '+' : ''}{r.deviation}%
-                </td>
-                <td>
-                  <span
-                    className="inline-block rounded-full px-2 py-0.5 text-xs font-semibold"
-                    style={{
-                      backgroundColor: `${RATIO_STATUS_COLORS[r.status]}20`,
-                      color: RATIO_STATUS_COLORS[r.status],
-                    }}
-                  >
-                    {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <h3 className="mb-4">Strength Balance</h3>
+      <div className="flex flex-wrap gap-2 justify-center">
+        {ratios.map((r) => (
+          <div key={r.name} className="rounded-lg p-3 border border-border text-center" style={{ minWidth: '140px', flex: '1 1 140px', maxWidth: '180px' }}>
+            <div className="text-xs opacity-50 uppercase mb-1">{r.name}</div>
+            <div className="text-lg font-bold">{r.actual} <span className="text-xs opacity-40">/ {r.target}</span></div>
+            <div className="flex items-center justify-center gap-1.5 mt-1">
+              <span className="text-xs" style={{ color: RATIO_STATUS_COLORS[r.status] }}>
+                {r.deviation > 0 ? '+' : ''}{r.deviation}%
+              </span>
+              <span className="text-xs font-bold px-1.5 py-0.5 rounded"
+                style={{ backgroundColor: RATIO_STATUS_COLORS[r.status] + '20', color: RATIO_STATUS_COLORS[r.status] }}>
+                {r.status}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -394,7 +364,7 @@ function WeeklyMuscleVolumeChart({ volumes }: { volumes: WeeklyMuscleVolume[] })
                 </text>
                 <rect x={labelWidth} y={y} width={barW} height={barHeight} rx={3} fill={getVolumeColor(v.volume, maxVolume)} opacity={0.85} />
                 <text x={labelWidth + barW + 6} y={y + barHeight / 2 + 4} fill="var(--color-text-muted)">
-                  {(v.volume / 1000).toFixed(1)}t
+                  {(v.volume / 1000).toFixed(1)} tons
                 </text>
               </g>
             );
@@ -447,7 +417,7 @@ function AmrapTrendCards({ trends }: { trends: AmrapTrend[] }) {
   return (
     <div className="card mb-6">
       <h3 className="mb-4">AMRAP Trends</h3>
-      <div className="flex gap-4 flex-wrap">
+      <div className="flex gap-3 flex-wrap justify-center">
         {trends.map((t) => (
           <div key={t.lift} className="stat-card" style={{ minWidth: '160px' }}>
             <div className="label">{liftLabel(t.lift)}</div>
@@ -480,7 +450,7 @@ function ComplianceCards({ summary }: { summary: ComplianceSummary }) {
   return (
     <div className="card mb-6">
       <h3 className="mb-4">nSuns Compliance</h3>
-      <div className="flex gap-4 flex-wrap">
+      <div className="flex gap-3 flex-wrap justify-center">
         <div className="stat-card">
           <div className="label">Avg T1 Rate</div>
           <div className="value">{summary.avgT1Rate}%</div>
@@ -515,7 +485,7 @@ function PRPredictionCards({ predictions }: { predictions: PRPrediction[] }) {
     <div className="card mb-6">
       <h3 className="mb-4">PR Predictions (30 days)</h3>
       <p className="text-xs opacity-60 mb-3">Based on current strength velocity for gaining lifts</p>
-      <div className="flex gap-4 flex-wrap">
+      <div className="flex gap-3 flex-wrap justify-center">
         {predictions.map((p) => (
           <div key={p.lift} className="stat-card" style={{ minWidth: '160px' }}>
             <div className="label">{liftLabel(p.lift)}</div>

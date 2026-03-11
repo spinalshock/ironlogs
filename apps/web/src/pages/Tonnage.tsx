@@ -117,15 +117,15 @@ export default function Tonnage() {
         </div>
         <div className="stat-card">
           <div className="label">Avg Tonnage</div>
-          <div className="value">{(avgTonnage / 1000).toFixed(2)}<span className="text-sm font-medium text-text-secondary"> t</span></div>
+          <div className="value">{(avgTonnage / 1000).toFixed(2)}<span className="text-sm font-medium text-text-secondary"> tons</span></div>
         </div>
         <div className="stat-card">
           <div className="label">Peak Tonnage</div>
-          <div className="value">{(maxTonnage / 1000).toFixed(2)}<span className="text-sm font-medium text-text-secondary"> t</span></div>
+          <div className="value">{(maxTonnage / 1000).toFixed(2)}<span className="text-sm font-medium text-text-secondary"> tons</span></div>
         </div>
         <div className="stat-card">
           <div className="label">Total</div>
-          <div className="value">{(totalTonnage / 1000).toFixed(1)}<span className="text-sm font-medium text-text-secondary"> t</span></div>
+          <div className="value">{(totalTonnage / 1000).toFixed(1)}<span className="text-sm font-medium text-text-secondary"> tons</span></div>
         </div>
       </div>
 

@@ -48,9 +48,9 @@ export default function Achievements() {
     <div>
       <h2>Character</h2>
 
-      <div className="flex gap-2 mb-8 flex-wrap">
+      <div className="flex gap-1.5 mb-8 overflow-x-auto">
         {tabs.map((t) => (
-          <button key={t.key} onClick={() => setTab(t.key)} className={t.key === tab ? 'btn-primary' : 'btn-secondary'}>
+          <button key={t.key} onClick={() => setTab(t.key)} className={`whitespace-nowrap text-sm ${t.key === tab ? 'btn-primary' : 'btn-secondary'}`}>
             {t.label}
           </button>
         ))}
@@ -201,7 +201,7 @@ function ProfileTab({ xp, lifterClass, title, rank, insights, earnedCount, total
             <div className="lifetime-stat-label">Sessions</div>
           </div>
           <div className="lifetime-stat">
-            <div className="lifetime-stat-value">{lifetime.totalTonnage}t</div>
+            <div className="lifetime-stat-value">{lifetime.totalTonnage} tons</div>
             <div className="lifetime-stat-label">Total Volume</div>
           </div>
           <div className="lifetime-stat">
@@ -324,7 +324,7 @@ function getAchievementProgress(achievement: Achievement, entries: LiftEntry[]):
   if (tonnageMatch) {
     const target = parseInt(tonnageMatch[1].replace(/,/g, ''));
     const current = Math.round(groupByDay(entries).reduce((s, d) => s + d.tonnage, 0) / 1000);
-    return { current, target, label: `${current}t / ${target}t` };
+    return { current, target, label: `${current} / ${target} tons` };
   }
 
   // "N-day training streak" pattern

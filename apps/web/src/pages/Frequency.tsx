@@ -1,6 +1,15 @@
 import { useState } from 'react';
 import { useLifts, groupByDay, calcFatigue, getSleepProgression, getSleepStats } from '../lib/useLifts';
 
+const LIFT_LABELS: Record<string, string> = {
+  bench: 'Bench', squat: 'Squat', deadlift: 'Deadlift', ohp: 'OHP',
+  cgbench: 'CG Bench', incline_bench: 'Incline Bench', front_squat: 'Front Squat',
+  sumo_deadlift: 'Sumo DL', face_pulls: 'Face Pulls', pendlay_row: 'Pendlay Row',
+  seated_row: 'Seated Row', lateral_raise: 'Lateral Raise', bicep_curl: 'Bicep Curl',
+  tricep_pushdown: 'Tricep Pushdown', leg_curl: 'Leg Curl', farmers_walk: "Farmer's Walk",
+  chinup: 'Chin-up',
+};
+
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const CELL_SIZE = 14;
@@ -85,23 +94,21 @@ export default function Frequency() {
     <div>
       <h2>Training Frequency</h2>
 
-      <div className="flex gap-6 mb-6 flex-wrap">
+      <div className="flex gap-3 mb-6 flex-wrap justify-center">
         <div className="stat-card"><div className="label">Total Sessions</div><div className="value">{totalSessions}</div></div>
         <div className="stat-card"><div className="label">Sessions / Week</div><div className="value">{sessionsPerWeek}</div></div>
         <div className="stat-card"><div className="label">Current Streak</div><div className="value">{streak} day{streak !== 1 ? 's' : ''}</div></div>
       </div>
 
       {fatigue ? (
-        <div className="flex items-center gap-4 flex-wrap rounded-lg p-3 mb-6"
+        <div className="rounded-lg p-3 mb-6 text-center"
           style={{ border: `1px solid ${fatigue.color}40`, backgroundColor: `${fatigue.color}15` }}>
-          <div>
-            <div className="text-xs opacity-60">Recovery Status</div>
-            <div className="text-lg font-bold" style={{ color: fatigue.color }}>{fatigue.label}</div>
-          </div>
-          <div className="text-sm opacity-75">
+          <div className="text-xs opacity-60">Recovery Status</div>
+          <div className="text-lg font-bold" style={{ color: fatigue.color }}>{fatigue.label}</div>
+          <div className="text-xs opacity-60 mt-1">
             ACWR: <strong>{fatigue.acwr}</strong>
-            <span className="mx-2">|</span>Acute: {(fatigue.acuteEWMA / 1000).toFixed(1)} tons
-            <span className="mx-2">|</span>Chronic: {(fatigue.chronicEWMA / 1000).toFixed(1)} tons
+            <span className="mx-1">·</span>Acute: {(fatigue.acuteEWMA / 1000).toFixed(1)} tons
+            <span className="mx-1">·</span>Chronic: {(fatigue.chronicEWMA / 1000).toFixed(1)} tons
           </div>
         </div>
       ) : (
@@ -130,18 +137,18 @@ export default function Frequency() {
         </svg>
       </div>
 
-      <div className="text-sm mt-2 h-5" style={{ opacity: hoveredInfo ? 0.8 : 0 }}>
+      <div className="text-xs mt-2 h-5 text-center" style={{ opacity: hoveredInfo ? 0.8 : 0 }}>
         {hoveredInfo && (
           <>
             <strong>{hoveredInfo.date}</strong>
             {hoveredInfo.tonnage > 0
-              ? ` — ${(hoveredInfo.tonnage / 1000).toFixed(1)} tons total (${hoveredInfo.lifts.join(', ')})`
+              ? ` — ${(hoveredInfo.tonnage / 1000).toFixed(1)} tons (${hoveredInfo.lifts.map(l => LIFT_LABELS[l] || l).join(', ')})`
               : ' — Rest day'}
           </>
         )}
       </div>
 
-      <div className="flex items-center gap-1.5 mt-3 text-xs opacity-75">
+      <div className="flex items-center gap-1.5 mt-1 text-xs opacity-75 justify-center">
         <span>Less</span>
         {['rgba(128,128,128,0.1)', '#a5d6a7', '#81c784', '#66bb6a', '#4caf50'].map((c, i) => (
           <span key={i} className="inline-block rounded-sm" style={{ width: CELL_SIZE, height: CELL_SIZE, backgroundColor: c }} />
@@ -181,7 +188,7 @@ function SleepChart({ entries }: { entries: import('../lib/types').LiftEntry[] }
       <h3 className="mb-3">Sleep Tracking</h3>
 
       {sleepStats && (
-        <div className="flex gap-6 mb-4 flex-wrap">
+        <div className="flex gap-3 mb-4 flex-wrap justify-center">
           <div className="stat-card">
             <div className="label">Avg (7d)</div>
             <div className="value" style={{ color: sleepStats.avg7d >= 7 ? '#66bb6a' : sleepStats.avg7d >= 6 ? '#ffa726' : '#ef5350' }}>
@@ -241,13 +248,13 @@ function SleepChart({ entries }: { entries: import('../lib/types').LiftEntry[] }
         </svg>
       </div>
 
-      <div className="text-sm mt-1 h-5" style={{ opacity: hoveredBar !== null && data[hoveredBar] ? 0.8 : 0 }}>
+      <div className="text-xs mt-1 h-5 text-center" style={{ opacity: hoveredBar !== null && data[hoveredBar] ? 0.8 : 0 }}>
         {hoveredBar !== null && data[hoveredBar] && (
           <><strong>{data[hoveredBar].date}</strong> — {data[hoveredBar].sleep}h sleep</>
         )}
       </div>
 
-      <div className="flex items-center gap-1.5 mt-2 text-xs opacity-75">
+      <div className="flex items-center gap-1.5 mt-1 text-xs opacity-75 justify-center">
         {[
           { color: '#ef5350', label: '<6h' },
           { color: '#ffa726', label: '6-7h' },

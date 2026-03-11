@@ -3,7 +3,7 @@ import TodaySession from '../components/TodaySession';
 import FatigueBanner from '../components/FatigueBanner';
 import { useLifts, getBestRecentSets, getLatestBodyweight, groupByDay, calcWeeklyStreak } from '../lib/useLifts';
 import { calcLiftScore, calcOverallScore } from '../lib/scoring';
-import { calcReadiness, getAllStrengthVelocities, detectPlateaus, getStrengthRatios } from '../lib/analytics';
+import { calcReadiness } from '../lib/analytics';
 import { calcXPProfile, getLifterClass, getRank } from '../lib/gamification';
 import { USER_CONFIG } from '../config';
 
@@ -19,9 +19,6 @@ function getGreeting(): string {
 function getTime(): string {
   return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
-
-const velocityColors = { gaining: '#66bb6a', plateau: '#ffa726', declining: '#ef5350' };
-const ratioColors = { balanced: '#66bb6a', lagging: '#ef5350', dominant: '#ffa726' };
 
 export default function Dashboard() {
   const { entries, loading } = useLifts();
@@ -67,9 +64,6 @@ export default function Dashboard() {
   const sessions = groupByDay(entries);
 
   const readiness = calcReadiness(entries);
-  const velocities = getAllStrengthVelocities(entries);
-  const plateaus = detectPlateaus(entries).filter((p) => p.isPlateaued);
-  const ratios = getStrengthRatios(entries);
   const xp = calcXPProfile(entries);
   const lifterClass = getLifterClass(entries);
   const rank = getRank(entries);
@@ -131,44 +125,6 @@ export default function Dashboard() {
       </div>
 
       <FatigueBanner />
-
-      {velocities.length > 0 && (
-        <div className="flex gap-2 flex-wrap mt-4">
-          {velocities.map((v) => (
-            <span
-              key={v.lift}
-              className="text-xs font-medium px-2 py-1 rounded-full"
-              style={{ backgroundColor: velocityColors[v.trend] + '22', color: velocityColors[v.trend] }}
-            >
-              {v.lift} {v.velocity >= 0 ? '+' : ''}{v.velocity} kg/mo
-            </span>
-          ))}
-        </div>
-      )}
-
-      {plateaus.length > 0 && (
-        <div className="mt-4 p-3 rounded-xl text-sm" style={{ backgroundColor: '#ffa72622', color: '#ffa726' }}>
-          {plateaus.map((p) => (
-            <div key={p.lift}>
-              {p.lift.charAt(0).toUpperCase() + p.lift.slice(1)} plateau detected ({p.weeksSincePR} weeks). Consider variation or deload.
-            </div>
-          ))}
-        </div>
-      )}
-
-      {ratios.length > 0 && (
-        <div className="flex gap-2 flex-wrap mt-4">
-          {ratios.map((r) => (
-            <span
-              key={r.name}
-              className="text-xs font-medium px-2 py-1 rounded-full"
-              style={{ backgroundColor: ratioColors[r.status] + '22', color: ratioColors[r.status] }}
-            >
-              {r.name}: {r.actual} (target {r.target})
-            </span>
-          ))}
-        </div>
-      )}
 
       <div className="mt-6"><TodaySession /></div>
     </div>

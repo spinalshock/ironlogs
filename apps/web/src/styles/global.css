@@ -72,12 +72,13 @@
   }
 
   .stat-card {
-    padding: 1.25rem 1.5rem;
+    padding: 1rem 1.25rem;
     border-radius: 12px;
     border: 1px solid var(--color-border);
     background: var(--color-bg-card);
     backdrop-filter: blur(12px);
-    min-width: 140px;
+    min-width: 130px;
+    flex: 1 1 130px;
     transition: transform 0.2s, border-color 0.2s;
   }
   .stat-card:hover {
@@ -448,7 +449,8 @@
     padding: 2rem 1.25rem;
     animation: fadeIn 0.3s ease;
   }
-  .page h2 { margin-bottom: 1.25rem; }
+  .page h2 { margin-bottom: 1.25rem; text-align: center; }
+  .page h4 { text-align: center; }
 }
 
 /* ===== Navbar (outside layers for full specificity) ===== */

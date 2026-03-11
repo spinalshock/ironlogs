@@ -79,23 +79,33 @@ function SessionCard({ session }: { session: ReturnType<typeof groupByDay>[0] })
     weight: l.weight, reps: l.reps, note: l.notes.trim(),
   }));
 
+  const dayShort = getDayOfWeek(session.date).slice(0, 3);
+  const dateShort = session.date.slice(5); // "03-10"
+
   return (
-    <div className="p-4 rounded-lg border border-border cursor-pointer transition-colors" onClick={() => setExpanded(!expanded)}>
-      <div className="flex justify-between items-center">
-        <div className="flex items-baseline gap-3 flex-1">
-          <span className="font-bold text-lg">{session.date}</span>
-          <span className="opacity-65 text-sm">{getDayOfWeek(session.date)}</span>
+    <div className="p-3 rounded-lg border border-border cursor-pointer transition-colors" onClick={() => setExpanded(!expanded)}>
+      <div className="flex items-start gap-3">
+        {/* Date column */}
+        <div className="shrink-0 text-center" style={{ minWidth: '2.5rem' }}>
+          <div className="text-xs opacity-50 uppercase">{dayShort}</div>
+          <div className="font-bold text-sm">{dateShort}</div>
+        </div>
+
+        {/* Lifts */}
+        <div className="flex-1 min-w-0">
           <div className="flex gap-1.5 flex-wrap">
             {Array.from(liftSetCounts.entries()).map(([lift, info]) => (
-              <span key={lift} className="text-xs opacity-80" style={{ color: LIFT_COLORS[lift] || '#999' }}>
+              <span key={lift} className="text-xs" style={{ color: LIFT_COLORS[lift] || '#999' }}>
                 {info.count}x {LIFT_LABELS[lift] || lift}
               </span>
             ))}
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="opacity-65 text-sm">{(session.tonnage / 1000).toFixed(1)} tons</span>
-          <svg className={`w-4 h-4 opacity-40 transition-transform ${expanded ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+
+        {/* Tonnage + chevron */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="opacity-50 text-xs">{(session.tonnage / 1000).toFixed(1)} tons</span>
+          <svg className={`w-3.5 h-3.5 opacity-40 transition-transform ${expanded ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
         </div>
       </div>
 

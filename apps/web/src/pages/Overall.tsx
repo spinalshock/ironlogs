@@ -51,7 +51,7 @@ export default function Overall() {
   return (
     <div>
       <h2>Overall Progress</h2>
-      <div className="flex gap-6 mb-6 flex-wrap">
+      <div className="flex gap-3 mb-6 flex-wrap justify-center">
         <div className="stat-card"><div className="label">SS Score</div><div className="value">{latestSS}</div><div className="sub">Symmetric Strength</div></div>
         <div className="stat-card"><div className="label">DOTS</div><div className="value">{latestDOTS}</div><div className="sub">Powerlifting coefficient</div></div>
         <div className="stat-card"><div className="label">Total</div><div className="value">{total}kg</div><div className="sub">SBD + OHP</div></div>

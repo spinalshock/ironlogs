@@ -4,7 +4,7 @@ import {
 } from 'chart.js';
 import { Bar, Radar } from 'react-chartjs-2';
 import { useLifts, getBestRecentSets, getLatestBodyweight } from '../lib/useLifts';
-import { calcLiftScore, calcOverallScore, LEVELS, LEVEL_COLORS, SCORING_CATEGORIES } from '../lib/scoring';
+import { calcLiftScore, calcOverallScore, SCORING_CATEGORIES } from '../lib/scoring';
 import { getStrengthRatios } from '../lib/analytics';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, RadialLinearScale, PointElement, LineElement, Filler, Title, Tooltip, Legend);
@@ -52,38 +52,38 @@ export default function Scores() {
   };
 
   return (
-    <div>
+    <div className="text-center">
       <h2>Strength Scores</h2>
 
-      <div className="flex gap-8 mb-8 flex-wrap">
-        <div
-          className="rounded-xl p-6 text-center min-w-[200px]"
-          style={{
-            background: `linear-gradient(135deg, ${overall.color}33, ${overall.color}11)`,
-            border: `2px solid ${overall.color}`,
-          }}
-        >
-          <div className="text-4xl font-bold" style={{ color: overall.color }}>{overall.score}</div>
-          <div className="text-lg font-bold" style={{ color: overall.color }}>{overall.level}</div>
-          <div className="text-sm mt-2 opacity-70">Overall Strength Score</div>
-        </div>
-
-        <div className="flex-1 min-w-[250px]">
-          <h4 className="mt-0">Estimated One Rep Maxes</h4>
-          {liftScores.map((s) => (
-            <div key={s.lift} className="flex justify-between py-1.5 border-b border-border">
-              <span><strong>{LIFT_DISPLAY[s.lift] || s.lift}:</strong> {s.estimated1RM.toFixed(1)}kg</span>
-              <span className="text-sm font-bold" style={{ color: s.color }}>[{s.level}] {s.score}</span>
-            </div>
-          ))}
-        </div>
+      {/* Overall score hero */}
+      <div
+        className="rounded-xl p-6 mx-auto mb-6 max-w-[240px]"
+        style={{
+          background: `linear-gradient(135deg, ${overall.color}33, ${overall.color}11)`,
+          border: `2px solid ${overall.color}`,
+        }}
+      >
+        <div className="text-4xl font-bold" style={{ color: overall.color }}>{overall.score}</div>
+        <div className="text-lg font-bold" style={{ color: overall.color }}>{overall.level}</div>
+        <div className="text-sm mt-2 opacity-70">Overall Strength Score</div>
       </div>
 
-      <div className="mb-4 text-sm opacity-75">Bodyweight: {bodyweight}kg | Wilks-based scoring using Wathan 1RM formula</div>
+      {/* 1RM cards */}
+      <div className="flex flex-wrap gap-2 justify-center mb-6">
+        {liftScores.map((s) => (
+          <div key={s.lift} className="rounded-lg p-3 border border-border text-center" style={{ minWidth: '140px', flex: '1 1 140px', maxWidth: '180px' }}>
+            <div className="text-xs opacity-50 uppercase mb-1">{LIFT_DISPLAY[s.lift] || s.lift}</div>
+            <div className="text-lg font-bold">{s.estimated1RM.toFixed(1)}<span className="text-xs opacity-50 ml-0.5">kg</span></div>
+            <div className="text-xs font-bold mt-0.5" style={{ color: s.color }}>{s.level} · {s.score}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mb-6 text-xs opacity-50">BW {bodyweight}kg · DOTS scoring · Wathan 1RM</div>
 
       <h4>Strength Profile</h4>
       <p className="text-sm opacity-75 mt-0">Balance across the 5 strength categories</p>
-      <div className="max-w-[450px] mx-auto mb-8">
+      <div className="max-w-[400px] mx-auto mb-8">
         <Radar data={radarData} options={{
           responsive: true,
           plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${categoryLabels[ctx.dataIndex]}: ${ctx.raw}` } } },
@@ -113,18 +113,6 @@ export default function Scores() {
       }} />
 
       <StrengthBalanceRatios entries={entries} />
-
-      <div className="mt-6">
-        <h4>Strength Levels</h4>
-        <div className="flex flex-wrap gap-3">
-          {LEVELS.map((level) => (
-            <span key={level} className="inline-flex items-center gap-1 text-sm">
-              <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: LEVEL_COLORS[level] }} />
-              {level}
-            </span>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
@@ -133,33 +121,28 @@ function StrengthBalanceRatios({ entries }: { entries: import('../lib/types').Li
   const ratios = getStrengthRatios(entries);
   if (ratios.length === 0) return null;
 
-  const statusColor = { balanced: '#66bb6a', lagging: '#ef5350', dominant: '#ffa726' };
+  const statusColor: Record<string, string> = { balanced: '#66bb6a', lagging: '#ef5350', dominant: '#ffa726' };
 
   return (
     <div className="mt-6">
-      <h4>Strength Balance Ratios</h4>
-      <p className="text-sm opacity-75 mt-0">Classic coach-watched ratios between your main lifts</p>
-      <table>
-        <thead>
-          <tr><th>Ratio</th><th>Actual</th><th>Target</th><th>Deviation</th><th>Status</th></tr>
-        </thead>
-        <tbody>
-          {ratios.map((r) => (
-            <tr key={r.name}>
-              <td className="font-bold">{r.name}</td>
-              <td>{r.actual}</td>
-              <td>{r.target}</td>
-              <td>{r.deviation > 0 ? '+' : ''}{r.deviation}%</td>
-              <td>
-                <span className="text-xs font-bold px-2 py-0.5 rounded"
-                  style={{ backgroundColor: statusColor[r.status] + '22', color: statusColor[r.status] }}>
-                  {r.status}
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h4>Strength Balance</h4>
+      <div className="flex flex-wrap gap-2 justify-center">
+        {ratios.map((r) => (
+          <div key={r.name} className="rounded-lg p-3 border border-border text-center" style={{ minWidth: '140px', flex: '1 1 140px', maxWidth: '180px' }}>
+            <div className="text-xs opacity-50 uppercase mb-1">{r.name}</div>
+            <div className="text-lg font-bold">{r.actual} <span className="text-xs opacity-40">/ {r.target}</span></div>
+            <div className="flex items-center justify-center gap-1.5 mt-1">
+              <span className="text-xs" style={{ color: statusColor[r.status] }}>
+                {r.deviation > 0 ? '+' : ''}{r.deviation}%
+              </span>
+              <span className="text-xs font-bold px-1.5 py-0.5 rounded"
+                style={{ backgroundColor: statusColor[r.status] + '22', color: statusColor[r.status] }}>
+                {r.status}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
