@@ -15,10 +15,10 @@ export interface LifterClass {
 }
 
 const CLASSES: { name: string; category: string; description: string; color: string }[] = [
-  { name: 'The Juggernaut', category: 'Squat', description: 'Squat dominant', color: '#f06292' },
-  { name: 'The Titan', category: 'Floor Pull', description: 'Deadlift dominant', color: '#81c784' },
-  { name: 'The Gladiator', category: 'Horizontal Press', description: 'Bench dominant', color: '#7986cb' },
-  { name: 'The Olympian', category: 'Vertical Press', description: 'Press dominant', color: '#ffd54f' },
+  { name: 'The Juggernaut', category: 'Squat', description: 'Squat Dominance', color: '#f06292' },
+  { name: 'The Titan', category: 'Floor Pull', description: 'Pulling Dominance', color: '#81c784' },
+  { name: 'The Gladiator', category: 'Horizontal Press', description: 'Pressing Power', color: '#7986cb' },
+  { name: 'The Olympian', category: 'Vertical Press', description: 'Overhead Strength', color: '#ffd54f' },
 ];
 
 export function getLifterClass(entries: LiftEntry[]): LifterClass {
@@ -46,7 +46,7 @@ export function getLifterClass(entries: LiftEntry[]): LifterClass {
   const maxScore = Math.max(...scores);
   const minScore = Math.min(...scores);
   if (categoryScores.length >= 3 && maxScore > 0 && (maxScore - minScore) / maxScore < 0.15) {
-    return { name: 'The Atlas', description: 'Balanced strength across all patterns', primaryLift: 'balanced', color: '#ab47bc' };
+    return { name: 'The Atlas', description: 'Balanced Strength', primaryLift: 'balanced', color: '#ab47bc' };
   }
 
   const best_cat = categoryScores.reduce((a, b) => a.score > b.score ? a : b);

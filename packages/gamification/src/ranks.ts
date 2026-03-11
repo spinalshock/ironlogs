@@ -15,9 +15,9 @@ export interface Rank {
 
 export const RANKS: Rank[] = [
   { name: 'Mythic', minScore: 125, color: '#f44336' },
-  { name: 'Warlord', minScore: 112.5, color: '#ff5722' },
-  { name: 'Champion', minScore: 100, color: '#ffc107' },
-  { name: 'Iron Elite', minScore: 87.5, color: '#cddc39' },
+  { name: 'Legend', minScore: 112.5, color: '#ff5722' },
+  { name: 'Warlord', minScore: 100, color: '#ffc107' },
+  { name: 'Iron Champion', minScore: 87.5, color: '#cddc39' },
   { name: 'Iron Warrior', minScore: 75, color: '#4caf50' },
   { name: 'Iron Adept', minScore: 60, color: '#009688' },
   { name: 'Apprentice', minScore: 45, color: '#3f51b5' },

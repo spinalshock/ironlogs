@@ -3,7 +3,7 @@
  */
 
 import type { LiftEntry } from '@ironlogs/core';
-import { groupByDay, findPRs, calcWeeklyStreak } from '@ironlogs/analytics';
+import { groupByDay, findPRs } from '@ironlogs/analytics';
 
 // ─── XP System ──────────────────────────────────────────────
 
@@ -50,9 +50,27 @@ export function calcXPProfile(entries: LiftEntry[]): XPProfile {
     for (const date of findPRs(entries, lift)) allPRs.add(date);
   }
 
-  // Weekly streak for XP bonus (default 6 training days/week)
-  const weeklyStreak = calcWeeklyStreak(sessions, 6);
-  const effectiveStreak = weeklyStreak.streak + (weeklyStreak.currentWeekComplete ? 1 : 0);
+  // Build a running streak counter: consecutive sessions allowing 2-day gaps
+  // (covers rest days in a 6-day program). Resets on 3+ day gaps.
+  const streakByDate = new Map<string, number>();
+  if (sessions.length > 0) {
+    let streak = 1;
+    streakByDate.set(sessions[0].date, streak);
+    for (let i = 1; i < sessions.length; i++) {
+      const prev = new Date(sessions[i - 1].date + 'T00:00:00');
+      const curr = new Date(sessions[i].date + 'T00:00:00');
+      const gap = Math.round((curr.getTime() - prev.getTime()) / 86400000);
+      if (gap <= 2) { streak++; } else { streak = 1; }
+      streakByDate.set(sessions[i].date, streak);
+    }
+  }
+
+  // Streak XP: ramps from 5 at streak 2, up to max 50 at streak 20+
+  // Formula: min(5 * (streak - 1), 50) — so streak 1 = 0, 2 = 5, 3 = 10, ... 11 = 50 (capped)
+  function calcStreakXP(streak: number): number {
+    if (streak <= 1) return 0;
+    return Math.min((streak - 1) * 5, 50);
+  }
 
   const sessionXPs: SessionXP[] = sessions.map((s) => {
     // Tonnage XP
@@ -73,11 +91,9 @@ export function calcXPProfile(entries: LiftEntry[]): XPProfile {
     // PR bonus
     const prXP = allPRs.has(s.date) ? 100 : 0;
 
-    // Streak bonus (based on consecutive completed weeks)
-    let streakXP = 0;
-    if (effectiveStreak >= 8) streakXP = 30;
-    else if (effectiveStreak >= 4) streakXP = 20;
-    else if (effectiveStreak >= 2) streakXP = 10;
+    // Streak bonus (progressive, per-session)
+    const streak = streakByDate.get(s.date) || 0;
+    const streakXP = calcStreakXP(streak);
 
     return { date: s.date, tonnageXP, amrapXP, prXP, streakXP, total: tonnageXP + amrapXP + prXP + streakXP };
   });
