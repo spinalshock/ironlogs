@@ -68,15 +68,18 @@ export function calcWeeklyStreak(
   }
 
   const currentWeekStart = getWeekStart(todayStr());
+  // 80% threshold — survive occasional misses (e.g. 5/6 for a 6-day program)
+  const threshold = Math.ceil(trainingDaysPerWeek * 0.8);
+
   const currentWeekSessions = weekCounts.get(currentWeekStart) || 0;
-  const currentWeekComplete = currentWeekSessions >= trainingDaysPerWeek;
+  const currentWeekComplete = currentWeekSessions >= threshold;
 
   // Walk backwards from the week before current, checking consecutive completed weeks
   let streak = 0;
   let checkWeek = weekBefore(currentWeekStart);
   while (true) {
     const count = weekCounts.get(checkWeek) || 0;
-    if (count >= trainingDaysPerWeek) {
+    if (count >= threshold) {
       streak++;
       checkWeek = weekBefore(checkWeek);
     } else {

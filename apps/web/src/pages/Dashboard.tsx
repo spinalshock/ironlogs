@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import TodaySession from '../components/TodaySession';
 import FatigueBanner from '../components/FatigueBanner';
+import StatusFace from '../components/StatusFace';
 import { useLifts, getBestRecentSets, getLatestBodyweight, groupByDay, calcWeeklyStreak } from '../lib/useLifts';
 import { calcLiftScore, calcOverallScore } from '../lib/scoring';
 import { calcReadiness } from '../lib/analytics';
-import { calcXPProfile, getLifterClass, getRank } from '../lib/gamification';
+import { calcXPProfile, calcSkillProfile, getTrainingStatus, getLifterClass, getRank, getTitle } from '../lib/gamification';
 import { USER_CONFIG } from '../config';
 
 function getGreeting(): string {
@@ -64,9 +65,16 @@ export default function Dashboard() {
   const sessions = groupByDay(entries);
 
   const readiness = calcReadiness(entries);
-  const xp = calcXPProfile(entries);
+  const xp = calcXPProfile(entries, { trainingDaysPerWeek });
   const lifterClass = getLifterClass(entries);
   const rank = getRank(entries);
+  const title = getTitle(entries);
+  const skills = calcSkillProfile(entries);
+
+  // Current streak for status face
+  const lastSession = xp.sessions[xp.sessions.length - 1];
+  const currentStreak = lastSession?.streakXP ? Math.floor(lastSession.streakXP / 5) + 1 : 1;
+  const status = getTrainingStatus(readiness?.score ?? null, currentStreak);
 
   const weeklyStreak = calcWeeklyStreak(sessions, trainingDaysPerWeek);
 
@@ -79,18 +87,57 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* XP Bar */}
-      <div className="mb-4 p-3 rounded-xl" style={{ backgroundColor: 'rgba(121,134,203,0.08)', border: '1px solid rgba(121,134,203,0.2)' }}>
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl font-extrabold" style={{ color: '#7986cb' }}>Lv.{xp.level}</span>
-            <span className="text-sm font-bold" style={{ color: lifterClass.color }}>{lifterClass.name}</span>
-            <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: rank.color + '1a', color: rank.color, filter: 'brightness(1.5)' }}>{rank.name}</span>
+      {/* Character Panel */}
+      <div className="mb-6 p-4 rounded-xl" style={{ backgroundColor: 'rgba(121,134,203,0.08)', border: '1px solid rgba(121,134,203,0.15)' }}>
+        {/* Identity Row: Face + Info */}
+        <div className="flex items-center gap-4 mb-3">
+          <div className="flex-shrink-0 rounded-lg p-1.5" style={{ backgroundColor: status.glowColor }}>
+            <StatusFace level={status.level} size={48} />
           </div>
-          <span className="text-xs opacity-50">{xp.xpInCurrentLevel}/{xp.xpForNextLevel} XP</span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-2xl font-extrabold" style={{ color: '#7986cb' }}>Lv.{xp.level}</span>
+              <span className="text-sm font-bold" style={{ color: lifterClass.color }}>{lifterClass.name}</span>
+              <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: rank.color + '1a', color: rank.color, filter: 'brightness(1.5)' }}>{rank.name}</span>
+            </div>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-xs opacity-60">{title.name}</span>
+              <span className="text-xs opacity-40">|</span>
+              <span className="text-xs font-medium" style={{ color: status.faceColor }}>{status.label}</span>
+            </div>
+          </div>
         </div>
-        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(128,128,128,0.15)' }}>
-          <div className="h-full rounded-full transition-all duration-700" style={{ width: `${xp.progressPct}%`, background: 'linear-gradient(90deg, #7986cb, #ab47bc)' }} />
+
+        {/* Overall XP Bar */}
+        <div className="mb-3">
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs opacity-50">XP</span>
+            <span className="text-xs opacity-40">{xp.xpInCurrentLevel}/{xp.xpForNextLevel}</span>
+          </div>
+          <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(128,128,128,0.15)' }}>
+            <div className="h-full rounded-full transition-all duration-700" style={{ width: `${xp.progressPct}%`, background: 'linear-gradient(90deg, #7986cb, #ab47bc)' }} />
+          </div>
+        </div>
+
+        {/* Skill Bars */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+          {skills.skills.map((s) => (
+            <div key={s.lift}>
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-medium opacity-70">{s.label}</span>
+                <span className="text-xs opacity-40">Lv.{s.level}</span>
+              </div>
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(128,128,128,0.12)' }}>
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${s.progressPct}%`,
+                    backgroundColor: s.lift === 'bench' ? '#7986cb' : s.lift === 'squat' ? '#f06292' : s.lift === 'deadlift' ? '#81c784' : '#ffd54f',
+                  }}
+                />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

@@ -63,7 +63,30 @@ export default function TodaySession() {
 
   const lastT1Lift = normalizeLiftName(lastT1Lifts[0].lift);
   const lastHadOnePlus = lastSession.lifts.some((l) => l.set_type === 't1_amrap' && /programmed\s+1\+/.test(l.notes));
-  const nextDayIndex = (detectProgramDay(lastT1Lift, lastHadOnePlus) + 1) % program.days.length;
+  let nextDayIndex = (detectProgramDay(lastT1Lift, lastHadOnePlus) + 1) % program.days.length;
+
+  // If the next day is a rest day, count how many consecutive rest days follow,
+  // then check if enough days have passed to have completed them all.
+  // e.g. 1 rest day → skip after 2+ days, 2 rest days (Sat+Sun) → skip after 3+ days
+  if (program.days[nextDayIndex].rest) {
+    let restDays = 0;
+    for (let offset = 0; offset < program.days.length; offset++) {
+      if (program.days[(nextDayIndex + offset) % program.days.length].rest) restDays++;
+      else break;
+    }
+    const lastDate = new Date(lastSession.date + 'T00:00:00');
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const daysSinceLast = Math.round((now.getTime() - lastDate.getTime()) / 86400000);
+    if (daysSinceLast > restDays) {
+      // All rest days completed — advance to next training day
+      for (let offset = 1; offset < program.days.length; offset++) {
+        const idx = (nextDayIndex + offset) % program.days.length;
+        if (!program.days[idx].rest) { nextDayIndex = idx; break; }
+      }
+    }
+  }
+
   const todayProgram = program.days[nextDayIndex];
 
   if (todayProgram.rest) {

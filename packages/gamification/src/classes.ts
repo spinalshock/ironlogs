@@ -41,11 +41,11 @@ export function getLifterClass(entries: LiftEntry[]): LifterClass {
     return { name: 'The Initiate', description: 'Just getting started', primaryLift: 'none', color: '#90a4ae' };
   }
 
-  // Check if balanced (max and min within 15%)
+  // Check if balanced (max and min within 20% — true balance is rare)
   const scores = categoryScores.map((c) => c.score);
   const maxScore = Math.max(...scores);
   const minScore = Math.min(...scores);
-  if (categoryScores.length >= 3 && maxScore > 0 && (maxScore - minScore) / maxScore < 0.15) {
+  if (categoryScores.length >= 3 && maxScore > 0 && (maxScore - minScore) / maxScore < 0.20) {
     return { name: 'The Atlas', description: 'Balanced Strength', primaryLift: 'balanced', color: '#ab47bc' };
   }
 

@@ -1,4 +1,6 @@
 export * from './xp.js';
+export * from './skills.js';
+export * from './status.js';
 export * from './classes.js';
 export * from './titles.js';
 export * from './ranks.js';

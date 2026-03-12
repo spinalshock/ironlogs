@@ -1,33 +1,49 @@
 # IronLogs Gamification System
 
-Technical documentation for the XP, leveling, and character systems.
+Technical documentation for the XP, leveling, skill, and character systems.
 
 ## XP Sources
 
-Each logged session earns XP from four sources:
+Each logged session earns XP from four sources. Sessions under 500kg total tonnage earn 0 XP (anti-farming).
 
-### 1. Tonnage XP (base)
+### 1. Tonnage XP (intensity-weighted)
 ```
-tonnageXP = round(session_tonnage_kg / 100)
-```
-A 3,000kg session = 30 XP. This is the baseline — every session earns something just for showing up and moving weight.
+tonnageXP = round(Σ(weight × reps × intensity_factor) / 100)
 
-### 2. AMRAP Surplus XP
+intensity_factor = clamp(weight / estimate1RM(weight, reps), 0.4, 1.2)
 ```
-amrapXP = surplus_reps × 10  (per AMRAP set)
+Heavy work earns more XP than junk volume. A 100kg×5 set has higher intensity (~0.87) than a 20kg×10 set (~0.75), so equivalent tonnage from heavy work awards more XP.
+
+### 2. AMRAP Surplus XP (capped)
 ```
-Only applies to `t1_amrap` sets with a `programmed N+` note. If you're programmed for 3+ and hit 8, that's 5 surplus reps = +50 XP. Rewards effort beyond the minimum.
+amrapXP = min(surplus, 10) × 10  (per AMRAP set)
+```
+Only applies to `t1_amrap` sets with a `programmed N+` note. Surplus capped at 10 reps per set (max +100 XP per AMRAP) to prevent runaway sets from dominating.
 
 ### 3. PR Bonus
 ```
 prXP = 100  (flat, per session with a PR)
 ```
-Awarded when any T1 lift (bench/squat/deadlift/ohp) hits a new estimated 1RM high on that date. One bonus per day regardless of how many PRs.
+Awarded when any T1 lift hits a new estimated 1RM high. One bonus per day.
 
-### 4. Streak Bonus (progressive)
+### 4. Streak Bonus (progressive, program-aware)
 ```
 streakXP = min((streak - 1) × 5, 50)
 ```
+
+**Gap tolerance adapts to training frequency:**
+```
+expected_gap = ceil(7 / training_days_per_week)
+```
+
+| Program | Expected gap | Example |
+|---------|-------------|---------|
+| 6 days/week | 2 days | Mon-Sat with Sun rest |
+| 5 days/week | 2 days | |
+| 4 days/week | 2 days | |
+| 3 days/week | 3 days | Mon-Wed-Fri |
+
+A gap exceeding `expected_gap` resets the streak to 1.
 
 | Streak | Bonus |
 |--------|-------|
@@ -38,8 +54,6 @@ streakXP = min((streak - 1) × 5, 50)
 | 8 | +35 |
 | 11+ | +50 (cap) |
 
-**Streak definition:** Consecutive sessions with ≤2 calendar day gaps between them. A gap of 3+ days resets the streak to 1. The 2-day tolerance covers programmed rest days (e.g., a 6-day program with 1 rest day won't break the streak).
-
 ### Typical Session XP Range
 - Light accessory day: ~30-50 XP (tonnage only)
 - Full T1+T2 session: ~80-150 XP (tonnage + AMRAP)
@@ -48,30 +62,50 @@ streakXP = min((streak - 1) × 5, 50)
 ## Level Curve
 
 ```
-XP_required(level) = round(100 × level^1.5)
+XP_required(level) = round(80 × level^1.5)
 ```
+
+Slightly faster early progression than standard RPG curves, tuned for 3-6x/week training frequency.
 
 | Level | XP to Next | Cumulative | ~Sessions to reach |
 |-------|-----------|------------|-------------------|
-| 1 | 100 | 100 | 1 |
-| 2 | 283 | 383 | 3-4 |
-| 5 | 1,118 | 2,936 | 20-30 |
-| 10 | 3,162 | 13,096 | 80-130 |
-| 15 | 5,809 | 33,616 | 200-340 |
-| 20 | 8,944 | 63,246 | 400-630 |
+| 1 | 80 | 80 | 1 |
+| 2 | 226 | 306 | 2-3 |
+| 5 | 894 | 2,349 | 15-25 |
+| 10 | 2,530 | 10,477 | 65-100 |
+| 15 | 4,648 | 26,893 | 170-270 |
+| 20 | 7,155 | 50,597 | 320-500 |
 
-The curve is game-feel, not milestone-based. Early levels come fast (1-2 sessions), later levels require sustained training over weeks. This is intentional — the *real* progression signals are Rank and Title (see below).
+## Per-Lift Skill System (Runescape-style)
+
+Each T1 lift has its own independent XP and level progression.
+
+### Skill XP
+```
+liftXP = lift_session_tonnage / 50
+```
+
+### Skill Level Curve
+Same exponential as overall: `80 × level^1.5`
+
+### Tracked Lifts
+- Bench (blue)
+- Squat (pink)
+- Deadlift (green)
+- OHP (yellow)
+
+Skills provide **continuous visible progress** even during strength plateaus. The progress bars always move as long as you train, which maintains motivation when PRs become rare.
 
 ## Character System
 
 Three independent axes, each answering a different question:
 
 ### Class — "What am I good at?"
-Based on which scoring category (Squat / Floor Pull / Horizontal Press / Vertical Press) has the highest strength score. If all categories are within 15% of each other, you're balanced.
+Based on which scoring category has the highest strength score. Balanced threshold: within **20%** of each other.
 
 | Class | Condition | Description |
 |-------|-----------|-------------|
-| The Atlas | All categories within 15% | Balanced Strength |
+| The Atlas | All categories within 20% | Balanced Strength |
 | The Juggernaut | Squat dominant | Squat Dominance |
 | The Titan | Floor Pull dominant | Pulling Dominance |
 | The Gladiator | Horizontal Press dominant | Pressing Power |
@@ -79,24 +113,22 @@ Based on which scoring category (Squat / Floor Pull / Horizontal Press / Vertica
 | The Initiate | No data | Just getting started |
 
 ### Rank — "How strong am I?"
-Based on overall strength score (DOTS-normalized, age-adjusted, averaged across scoring categories).
+Based on overall strength score (DOTS-normalized, age-adjusted).
 
-| Rank | Min Score | Roughly equivalent to |
-|------|-----------|----------------------|
-| Mythic | 125 | World Class |
-| Legend | 112.5 | Elite |
-| Warlord | 100 | Exceptional |
-| Iron Champion | 87.5 | Advanced |
-| Iron Warrior | 75 | Proficient |
-| Iron Adept | 60 | Intermediate |
-| Apprentice | 45 | Novice |
-| Initiate | 30 | Untrained |
-| Civilian | 0 | Subpar |
-
-These thresholds map directly to the strength scoring levels. A Rank change = a real shift in strength.
+| Rank | Min Score |
+|------|-----------|
+| Mythic | 125 |
+| Legend | 112.5 |
+| Warlord | 100 |
+| Iron Champion | 87.5 |
+| Iron Warrior | 75 |
+| Iron Adept | 60 |
+| Apprentice | 45 |
+| Initiate | 30 |
+| Civilian | 0 |
 
 ### Title — "How consistent am I?"
-Pure session count. No strength requirement, just showing up.
+Pure session count.
 
 | Title | Sessions |
 |-------|----------|
@@ -108,15 +140,28 @@ Pure session count. No strength requirement, just showing up.
 | Barbell Initiate | 10 |
 | Newcomer | 1 |
 
+## Status Face System
+
+Doomguy-inspired pixel art face that communicates training state at a glance.
+
+### Primary Signal: Readiness Score
+| Readiness | Status | Face |
+|-----------|--------|------|
+| 80+ | Bloodlust | Red, glowing eyes |
+| 60-79 | Determined | Orange, furrowed brow |
+| 40-59 | Steady | Green, neutral |
+| 20-39 | Tired | Grey-blue, droopy |
+| <20 | Wrecked | Dark grey, bruised |
+
+### Modifier: Streak
+Streak ≥ 10 sessions boosts status by one tier (e.g. Steady → Determined).
+
 ## Weekly Streak (Dashboard)
 
-Separate from the XP streak. Displayed on the Dashboard as "X w" (weeks).
-
-A week (Mon-Sun) counts as "complete" if sessions that week ≥ training days in the program (read from `nsuns-program.json`). The streak = consecutive completed weeks walking backwards from last week. Current week is tracked separately as in-progress.
+A week (Mon-Sun) counts as "complete" if sessions that week ≥ **80%** of training days in the program. This survives occasional misses (e.g. 5/6 for a 6-day program). Streak = consecutive completed weeks walking backwards from last week.
 
 ## Scoring (DOTS)
 
-Strength scores use the DOTS formula (IPF 2019) to normalize for bodyweight:
 1. Estimated 1RM via Wathan formula
 2. Project to powerlifting total using lift ratio constants
 3. Apply DOTS coefficient for bodyweight normalization
@@ -125,12 +170,10 @@ Strength scores use the DOTS formula (IPF 2019) to normalize for bodyweight:
 
 ## Readiness Score
 
-Weighted composite of three signals:
-
 | Component | Weight | Source |
 |-----------|--------|--------|
 | Sleep | 50% | 7-day average sleep hours (8h = 100%) |
 | Fatigue | 30% | ACWR via EWMA (optimal 0.8-1.3) |
 | AMRAP Trend | 20% | 7-session average surplus reps |
 
-Score 0-100: Fresh (80+), Good (60-79), Moderate (40-59), Fatigued (<40). Requires 3+ weeks of data for the fatigue component to activate.
+Score 0-100: Fresh (80+), Good (60-79), Moderate (40-59), Fatigued (<40).

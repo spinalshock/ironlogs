@@ -1,6 +1,8 @@
 // Re-export from @ironlogs/gamification
 export {
   calcXPProfile,
+  calcSkillProfile,
+  getTrainingStatus,
   getLifterClass,
   getTitle,
   getRank,
@@ -12,6 +14,11 @@ export {
   getInsights,
   type SessionXP,
   type XPProfile,
+  type XPConfig,
+  type LiftSkill,
+  type SkillProfile,
+  type TrainingStatus,
+  type StatusLevel,
   type LifterClass,
   type Title,
   type Rank,
