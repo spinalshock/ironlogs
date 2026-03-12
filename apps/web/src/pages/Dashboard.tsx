@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import TodaySession from '../components/TodaySession';
 import FatigueBanner from '../components/FatigueBanner';
 import AnimatedFace from '../components/AnimatedFace';
+import BarbellLoader from '../components/BarbellLoader';
 import { useLifts, getBestRecentSets, getLatestBodyweight, groupByDay, calcWeeklyStreak } from '../lib/useLifts';
 import { calcLiftScore, calcOverallScore } from '../lib/scoring';
 import { calcReadiness } from '../lib/analytics';
@@ -42,19 +43,7 @@ export default function Dashboard() {
       .catch(() => {});
   }, []);
 
-  if (loading) {
-    return (
-      <div>
-        <div className="skeleton w-[200px] h-8 mb-4" />
-        <div className="flex gap-4 mb-6">
-          <div className="skeleton w-[140px] h-[90px] rounded-xl" />
-          <div className="skeleton w-[140px] h-[90px] rounded-xl" />
-          <div className="skeleton w-[140px] h-[90px] rounded-xl" />
-        </div>
-        <div className="skeleton w-full h-[200px] rounded-xl" />
-      </div>
-    );
-  }
+  if (loading) return <BarbellLoader size={56} />;
 
   const bw = getLatestBodyweight(entries);
   const best = getBestRecentSets(entries);
@@ -94,7 +83,7 @@ export default function Dashboard() {
         {/* Identity Row: Face + Info */}
         <div className="flex items-center gap-5 mb-3">
           <div className="flex-shrink-0 rounded-xl overflow-hidden" style={{ boxShadow: `0 0 20px ${status.glowColor}` }}>
-            <AnimatedFace file="SleepMode.png" fw={512} fh={512} size={96} duration={2.0} />
+            <AnimatedFace file="GodMode.jpg" fw={512} fh={512} size={96} duration={2.0} />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2.5 flex-wrap">

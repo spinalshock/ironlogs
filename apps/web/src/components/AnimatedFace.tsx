@@ -32,7 +32,8 @@ export default function AnimatedFace({ file, fw, fh, size = 80, duration = 1.6, 
       if (!ctx) return;
       const draw = () => {
         ctx.clearRect(0, 0, size, displayH);
-        const [sx, sy] = quads[frame % 4];
+        const order = [0, 1, 3, 2];
+        const [sx, sy] = quads[order[frame % 4]];
         ctx.drawImage(img, sx, sy, fw, fh, 0, 0, size, displayH);
         frame++;
       };

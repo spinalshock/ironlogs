@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import ErrorBoundary from './components/ErrorBoundary'
+import BarbellLoader from './components/BarbellLoader'
 
 // Retry failed chunk loads once (handles stale SW cache after deploy)
 function lazyRetry(fn: () => Promise<any>) {
@@ -29,12 +30,7 @@ const Analytics = lazyRetry(() => import('./pages/Analytics'))
 const Compliance = lazyRetry(() => import('./pages/Compliance'))
 
 function PageLoader() {
-  return (
-    <div style={{ padding: '2rem' }}>
-      <div className="skeleton" style={{ width: '180px', height: '1.5rem', marginBottom: '1.5rem' }} />
-      <div className="skeleton" style={{ width: '100%', height: '300px', borderRadius: '12px' }} />
-    </div>
-  )
+  return <BarbellLoader size={56} />
 }
 
 export default function App() {
