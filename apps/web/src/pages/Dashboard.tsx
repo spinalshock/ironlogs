@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TodaySession from '../components/TodaySession';
 import FatigueBanner from '../components/FatigueBanner';
-import StatusFace from '../components/StatusFace';
+import AnimatedFace from '../components/AnimatedFace';
 import { useLifts, getBestRecentSets, getLatestBodyweight, groupByDay, calcWeeklyStreak } from '../lib/useLifts';
 import { calcLiftScore, calcOverallScore } from '../lib/scoring';
 import { calcReadiness } from '../lib/analytics';
@@ -92,22 +92,22 @@ export default function Dashboard() {
       {/* Character Panel */}
       <div className="mb-6 p-4 rounded-xl" style={{ backgroundColor: 'rgba(121,134,203,0.08)', border: '1px solid rgba(121,134,203,0.15)' }}>
         {/* Identity Row: Face + Info */}
-        <div className="flex items-center gap-4 mb-3">
-          <div className="flex-shrink-0 rounded-lg p-1.5" style={{ backgroundColor: status.glowColor }}>
-            <StatusFace level={status.level} size={48} />
+        <div className="flex items-center gap-5 mb-3">
+          <div className="flex-shrink-0 rounded-xl overflow-hidden" style={{ boxShadow: `0 0 20px ${status.glowColor}` }}>
+            <AnimatedFace file="SleepMode.png" fw={512} fh={512} size={96} duration={2.0} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-2xl font-extrabold" style={{ color: '#7986cb' }}>Lv.{xp.level}</span>
-              <span className="text-sm font-bold" style={{ color: lifterClass.color }}>{lifterClass.name}</span>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <span className="text-3xl font-extrabold" style={{ color: '#7986cb' }}>Lv.{xp.level}</span>
+              <span className="text-base font-bold" style={{ color: lifterClass.color }}>{lifterClass.name}</span>
               <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: rank.color + '1a', color: rank.color, filter: 'brightness(1.5)' }}>{rank.name}</span>
             </div>
-            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-              <span className="text-xs opacity-40">{lifterClass.description}</span>
-              <span className="text-xs opacity-25">·</span>
-              <span className="text-xs opacity-40">{sessions.length} sessions</span>
-              <span className="text-xs opacity-25">·</span>
-              <span className="text-xs font-medium" style={{ color: status.faceColor }}>{status.label}</span>
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <span className="text-sm opacity-40">{lifterClass.description}</span>
+              <span className="text-sm opacity-25">·</span>
+              <span className="text-sm opacity-40">{sessions.length} sessions</span>
+              <span className="text-sm opacity-25">·</span>
+              <span className="text-sm font-medium" style={{ color: status.faceColor }}>{status.label}</span>
             </div>
           </div>
         </div>
