@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import TodaySession from '../components/TodaySession';
 import FatigueBanner from '../components/FatigueBanner';
 import StatusFace from '../components/StatusFace';
@@ -77,6 +78,7 @@ export default function Dashboard() {
   const status = getTrainingStatus(readiness?.score ?? null, currentStreak);
 
   const weeklyStreak = calcWeeklyStreak(sessions, trainingDaysPerWeek);
+  const nav = useNavigate();
 
   return (
     <div>
@@ -100,9 +102,11 @@ export default function Dashboard() {
               <span className="text-sm font-bold" style={{ color: lifterClass.color }}>{lifterClass.name}</span>
               <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: rank.color + '1a', color: rank.color, filter: 'brightness(1.5)' }}>{rank.name}</span>
             </div>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-xs opacity-60">{title.name}</span>
-              <span className="text-xs opacity-40">|</span>
+            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+              <span className="text-xs opacity-40">{lifterClass.description}</span>
+              <span className="text-xs opacity-25">·</span>
+              <span className="text-xs opacity-40">{sessions.length} sessions</span>
+              <span className="text-xs opacity-25">·</span>
               <span className="text-xs font-medium" style={{ color: status.faceColor }}>{status.label}</span>
             </div>
           </div>
@@ -142,28 +146,28 @@ export default function Dashboard() {
       </div>
 
       <div className="flex gap-3 mb-6 flex-wrap">
-        <div className="stat-card">
+        <div className="stat-card cursor-pointer hover:brightness-110 transition-all" onClick={() => nav('/scores')}>
           <div className="label">Strength</div>
           <div className="value" style={{ color: overall.color }}>{overall.score}</div>
-          <div className="sub">{overall.level}</div>
+          <div className="sub">{rank.name} · {overall.level}</div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card cursor-pointer hover:brightness-110 transition-all" onClick={() => nav('/journal')}>
           <div className="label">Sessions</div>
           <div className="value">{sessions.length}</div>
-          <div className="sub">total logged</div>
+          <div className="sub">{title.name}</div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card cursor-pointer hover:brightness-110 transition-all" onClick={() => nav('/compliance')}>
           <div className="label">Streak</div>
-          <div className="value">{weeklyStreak.streak} <span className="text-lg font-medium text-text-secondary">w</span></div>
+          <div className="value">{weeklyStreak.streak > 0 && '🔥 '}{weeklyStreak.streak} <span className="text-lg font-medium text-text-secondary">weeks</span></div>
           <div className="sub">{weeklyStreak.currentWeekSessions}/{weeklyStreak.requiredPerWeek} this week</div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card cursor-pointer hover:brightness-110 transition-all" onClick={() => nav('/bodyweight')}>
           <div className="label">Bodyweight</div>
           <div className="value">{bw} <span className="text-lg font-medium text-text-secondary">kg</span></div>
           <div className="sub">latest</div>
         </div>
         {readiness && (
-          <div className="stat-card">
+          <div className="stat-card cursor-pointer hover:brightness-110 transition-all" onClick={() => nav('/analytics')}>
             <div className="label">Readiness</div>
             <div className="value" style={{ color: readiness.color }}>{readiness.score}</div>
             <div className="sub">{readiness.label}</div>
