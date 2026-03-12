@@ -40,13 +40,7 @@ interface WorkoutExercise {
   sets: WorkoutSet[];
 }
 
-const LIFT_LABELS: Record<string, string> = {
-  bench: 'Bench Press', squat: 'Back Squat', deadlift: 'Deadlift', ohp: 'Overhead Press',
-  cgbench: 'Close Grip Bench', incline_bench: 'Incline Bench', front_squat: 'Front Squat',
-  sumo_deadlift: 'Sumo Deadlift', chinup: 'Chin-up', pendlay_row: 'Pendlay Row',
-  face_pulls: 'Face Pulls', seated_row: 'Seated Row', lateral_raise: 'Lateral Raise',
-  bicep_curl: 'Bicep Curl', tricep_pushdown: 'Tricep Pushdown', leg_curl: 'Leg Curl',
-};
+import { LIFT_LABELS } from '../lib/liftMeta';
 
 const ACCESSORY_OPTIONS = [
   'face_pulls', 'seated_row', 'lateral_raise', 'bicep_curl',

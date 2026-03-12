@@ -2,34 +2,13 @@ import { useState, useEffect } from 'react';
 import { useLifts, groupByDay, get1RMProgression, getLatestBodyweight } from '../lib/useLifts';
 import { estimate1RM, normalizeLiftName, calcLiftScore } from '../lib/scoring';
 import { calcLiftFatigue } from '../lib/analytics';
+import { LIFT_LABELS, LIFT_COLORS } from '../lib/liftMeta';
 
 interface ProgramSet { weight: number; reps: string | number; }
 interface ProgramLift { lift: string; sets: ProgramSet[]; }
 interface ProgramDay { name: string; label: string; rest?: boolean; t1?: ProgramLift; t2?: ProgramLift; accessories?: string[]; }
 
-const LIFT_LABELS: Record<string, string> = {
-  bench: 'Bench Press', squat: 'Squat', deadlift: 'Deadlift', ohp: 'Overhead Press',
-  cgbench: 'Close Grip Bench', incline_bench: 'Incline Bench', front_squat: 'Front Squat', sumo_deadlift: 'Sumo Deadlift',
-};
-
-const LIFT_COLORS: Record<string, string> = {
-  bench: '#7986cb', squat: '#f06292', deadlift: '#81c784', ohp: '#ffd54f',
-  cgbench: '#b39ddb', incline_bench: '#64b5f6', front_squat: '#ce93d8', sumo_deadlift: '#a5d6a7',
-};
-
-const PROGRAM_ROTATION = [
-  { t1: 'bench', hasOnePlus: false }, { t1: 'deadlift', hasOnePlus: true },
-  { t1: 'ohp', hasOnePlus: true }, { t1: 'squat', hasOnePlus: true },
-  { t1: 'bench', hasOnePlus: true }, { t1: 'deadlift', hasOnePlus: false },
-];
-
-function detectProgramDay(t1Lift: string, hasOnePlusAmrap: boolean): number {
-  for (let i = 0; i < PROGRAM_ROTATION.length; i++) {
-    const d = PROGRAM_ROTATION[i];
-    if (d.t1 === t1Lift && d.hasOnePlus === hasOnePlusAmrap) return i;
-  }
-  return PROGRAM_ROTATION.findIndex((d) => d.t1 === t1Lift);
-}
+import { detectProgramDay } from '../lib/programDetection';
 
 function SetPill({ set, liftColor }: { set: ProgramSet; liftColor: string }) {
   const isAmrap = typeof set.reps === 'string' && String(set.reps).includes('+');

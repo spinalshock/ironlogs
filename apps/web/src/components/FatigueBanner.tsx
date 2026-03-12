@@ -1,36 +1,7 @@
-import { useLifts, groupByDay } from '../lib/useLifts';
-import { normalizeLiftName } from '../lib/scoring';
+import { useLifts } from '../lib/useLifts';
 import { calcLiftFatigue } from '../lib/analytics';
-
-const LIFT_LABELS: Record<string, string> = {
-  bench: 'Bench', squat: 'Squat', deadlift: 'Deadlift', ohp: 'OHP',
-};
-
-const PROGRAM_ROTATION = [
-  { t1: 'bench', hasOnePlus: false }, { t1: 'deadlift', hasOnePlus: true },
-  { t1: 'ohp', hasOnePlus: true }, { t1: 'squat', hasOnePlus: true },
-  { t1: 'bench', hasOnePlus: true }, { t1: 'deadlift', hasOnePlus: false },
-];
-
-function detectNextT1(entries: ReturnType<typeof useLifts>['entries']): string | null {
-  const sessions = groupByDay(entries);
-  if (sessions.length === 0) return null;
-  const last = sessions[sessions.length - 1];
-  const t1Lifts = last.lifts.filter((l) => l.set_type === 't1' || l.set_type === 't1_amrap');
-  if (t1Lifts.length === 0) return null;
-  const lastT1 = normalizeLiftName(t1Lifts[0].lift);
-  const hadOnePlus = last.lifts.some((l) => l.set_type === 't1_amrap' && /programmed\s+1\+/.test(l.notes));
-
-  for (let i = 0; i < PROGRAM_ROTATION.length; i++) {
-    const d = PROGRAM_ROTATION[i];
-    if (d.t1 === lastT1 && d.hasOnePlus === hadOnePlus) {
-      return PROGRAM_ROTATION[(i + 1) % PROGRAM_ROTATION.length].t1;
-    }
-  }
-  const idx = PROGRAM_ROTATION.findIndex((d) => d.t1 === lastT1);
-  if (idx >= 0) return PROGRAM_ROTATION[(idx + 1) % PROGRAM_ROTATION.length].t1;
-  return null;
-}
+import { LIFT_LABELS_SHORT as LIFT_LABELS } from '../lib/liftMeta';
+import { detectNextT1 } from '../lib/programDetection';
 
 export default function FatigueBanner() {
   const { entries, loading } = useLifts();

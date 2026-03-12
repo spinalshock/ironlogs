@@ -2,24 +2,10 @@ import { useState } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { useLifts, groupByDay, getAllUniqueLifts } from '../lib/useLifts';
+import { LIFT_LABELS, LIFT_COLORS } from '../lib/liftMeta';
 import type { DaySession } from '../lib/types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend);
-
-const LIFT_COLORS: Record<string, string> = {
-  bench: '#7986cb', squat: '#f06292', deadlift: '#81c784', ohp: '#ffd54f',
-  cgbench: '#b39ddb', incline_bench: '#64b5f6', front_squat: '#ce93d8', sumo_deadlift: '#a5d6a7',
-  chinup: '#ffb74d', row: '#80cbc4', face_pulls: '#90a4ae', seated_row: '#80cbc4',
-  lateral_raise: '#ef9a9a', bicep_curl: '#ffcc80', tricep_pushdown: '#ce93d8', leg_curl: '#a5d6a7',
-};
-
-const LIFT_LABELS: Record<string, string> = {
-  bench: 'Bench Press', squat: 'Back Squat', deadlift: 'Deadlift', ohp: 'Overhead Press',
-  cgbench: 'Close Grip Bench', incline_bench: 'Incline Bench', front_squat: 'Front Squat',
-  sumo_deadlift: 'Sumo Deadlift', chinup: 'Chin-up', pendlay_row: 'Pendlay Row',
-  face_pulls: 'Face Pulls', seated_row: 'Seated Row', lateral_raise: 'Lateral Raise',
-  bicep_curl: 'Bicep Curl', tricep_pushdown: 'Tricep Pushdown', leg_curl: 'Leg Curl',
-};
 
 function fmt(kg: number) { return (kg / 1000).toFixed(2); }
 

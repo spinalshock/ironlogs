@@ -44,15 +44,10 @@ import type {
 
 ChartJS.register(LinearScale, TimeScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
-const LIFT_LABELS: Record<string, string> = {
-  bench: 'Bench Press',
-  squat: 'Back Squat',
-  deadlift: 'Deadlift',
-  ohp: 'Overhead Press',
-};
+import { getLiftLabel } from '../lib/liftMeta';
 
 function liftLabel(lift: string): string {
-  return LIFT_LABELS[lift] || lift;
+  return getLiftLabel(lift);
 }
 
 // ─── 1. Readiness Score ──────────────────────────────────────

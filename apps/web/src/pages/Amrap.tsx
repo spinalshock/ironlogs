@@ -1,9 +1,7 @@
 import { useLifts } from '../lib/useLifts';
 import { normalizeLiftName } from '../lib/scoring';
+import { LIFT_LABELS_SHORT as LIFT_LABELS, LIFT_COLORS } from '../lib/liftMeta';
 import type { LiftEntry } from '../lib/types';
-
-const LIFT_LABELS: Record<string, string> = { bench: 'Bench', squat: 'Squat', deadlift: 'Deadlift', ohp: 'OHP' };
-const LIFT_COLORS: Record<string, string> = { bench: '#7986cb', squat: '#f06292', deadlift: '#81c784', ohp: '#ffd54f' };
 
 interface AmrapSet {
   date: string; lift: string; weight: number; reps: number;

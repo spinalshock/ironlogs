@@ -7,7 +7,7 @@ import { getStrengthVelocity, predictNextPR, detectPlateaus } from '../lib/analy
 
 ChartJS.register(LinearScale, TimeScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
-const LIFT_LABELS: Record<string, string> = { bench: 'Bench Press', squat: 'Back Squat', deadlift: 'Deadlift', ohp: 'Overhead Press' };
+import { LIFT_LABELS } from '../lib/liftMeta';
 
 export default function Progression() {
   const { entries, loading } = useLifts();

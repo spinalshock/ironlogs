@@ -1,61 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-
 interface Props {
-  lines: string[];
-  /** Delay before first bubble (ms) */
-  delay?: number;
-  /** Interval between new lines (ms) */
-  interval?: number;
-  /** How long the bubble stays visible after typing (ms) */
-  displayDuration?: number;
-  /** Typing speed (ms per character) */
-  typeSpeed?: number;
+  visible: boolean;
+  text: string;
+  typing: boolean;
 }
 
-export default function SpeechBubble({ lines, delay = 3000, interval = 8000, displayDuration = 3500, typeSpeed = 25 }: Props) {
-  const [visible, setVisible] = useState(false);
-  const [text, setText] = useState('');
-  const [typing, setTyping] = useState(false);
-  const usedRef = useRef<Set<number>>(new Set());
-  const typeRef = useRef<number>(0);
-
-  const pickLine = useCallback(() => {
-    if (usedRef.current.size >= lines.length) usedRef.current.clear();
-    let idx: number;
-    do { idx = Math.floor(Math.random() * lines.length); } while (usedRef.current.has(idx));
-    usedRef.current.add(idx);
-    return lines[idx];
-  }, [lines]);
-
-  const showLine = useCallback(() => {
-    const line = pickLine();
-    setText('');
-    setTyping(true);
-    setVisible(true);
-
-    let i = 0;
-    if (typeRef.current) clearInterval(typeRef.current);
-    typeRef.current = window.setInterval(() => {
-      i++;
-      setText(line.slice(0, i));
-      if (i >= line.length) {
-        clearInterval(typeRef.current);
-        setTyping(false);
-        setTimeout(() => setVisible(false), displayDuration);
-      }
-    }, typeSpeed);
-  }, [pickLine, displayDuration, typeSpeed]);
-
-  useEffect(() => {
-    const initialTimer = setTimeout(showLine, delay);
-    const cycleTimer = setInterval(showLine, interval);
-    return () => {
-      clearTimeout(initialTimer);
-      clearInterval(cycleTimer);
-      if (typeRef.current) clearInterval(typeRef.current);
-    };
-  }, [showLine, delay, interval]);
-
+export default function SpeechBubble({ visible, text, typing }: Props) {
   if (!visible) return null;
 
   return (
@@ -81,7 +30,7 @@ export default function SpeechBubble({ lines, delay = 3000, interval = 8000, dis
     }}>
       {text}
       {typing && <span style={{ opacity: 0.6, animation: 'blink 0.6s infinite' }}>|</span>}
-      {/* Triangle arrow pointing down — uses CSS borders, overlaps box by 1px */}
+      {/* Triangle outer (border) */}
       <div style={{
         position: 'absolute',
         top: 'calc(100% - 1px)',
@@ -92,6 +41,7 @@ export default function SpeechBubble({ lines, delay = 3000, interval = 8000, dis
         borderRight: '8px solid transparent',
         borderTop: '8px solid rgba(121, 134, 203, 0.3)',
       }} />
+      {/* Triangle inner (fill) */}
       <div style={{
         position: 'absolute',
         top: 'calc(100% - 2.5px)',

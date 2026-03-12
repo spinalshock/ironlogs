@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TodaySession from '../components/TodaySession';
 import FatigueBanner from '../components/FatigueBanner';
 import AnimatedFace from '../components/AnimatedFace';
 import BarbellLoader from '../components/BarbellLoader';
 import SpeechBubble from '../components/SpeechBubble';
+import { getSpeechLines } from '../lib/speechLines';
+import { useSpeech } from '../lib/useSpeech';
 import { useLifts, getBestRecentSets, getLatestBodyweight, groupByDay, calcWeeklyStreak } from '../lib/useLifts';
 import { calcLiftScore, calcOverallScore } from '../lib/scoring';
 import { calcReadiness } from '../lib/analytics';
@@ -70,31 +72,13 @@ export default function Dashboard() {
   const weeklyStreak = calcWeeklyStreak(sessions, trainingDaysPerWeek);
   const nav = useNavigate();
 
-  // Context-aware speech lines
-  const speechLines: string[] = [];
-  if (status.level === 'bloodlust') {
-    speechLines.push('Blood in the water. Time to feast.', 'The weights aren\'t gonna lift themselves.', 'Today we go to war.');
-  } else if (status.level === 'determined') {
-    speechLines.push('Locked in. Let\'s execute.', 'Good day to get stronger.', 'Focus. Lift. Repeat.');
-  } else if (status.level === 'tired') {
-    speechLines.push('Rest is part of the program.', 'Even warriors need sleep.', 'Recovery is gains in disguise.');
-  } else if (status.level === 'wrecked') {
-    speechLines.push('Take a break. Seriously.', 'Your CNS is filing a complaint.', 'Live to lift another day.');
-  } else {
-    speechLines.push('Steady as she goes.', 'Consistency beats intensity.', 'Trust the process.');
-  }
-  if (weeklyStreak.streak >= 4) speechLines.push(`${weeklyStreak.streak} weeks. Unstoppable.`, 'This streak is legendary.');
-  else if (weeklyStreak.streak >= 2) speechLines.push('Streak\'s building. Don\'t break it.');
-  if (readiness && readiness.score >= 85) speechLines.push('You\'re peaking. Hit something heavy.');
-  if (xp.level >= 10) speechLines.push('Double digits. Respect.');
-  speechLines.push(
-    'Pain is temporary. PRs are forever.',
-    'Somewhere, someone weaker is not giving up.',
-    'The bar doesn\'t care about your feelings.',
-    'Embrace the suck.',
-    'You don\'t have to love it. You just have to do it.',
-    'One more rep. Always one more.',
-  );
+  const speechLines = useMemo(() => getSpeechLines({
+    status: status.level,
+    weeklyStreak: weeklyStreak.streak,
+    readinessScore: readiness?.score ?? null,
+    level: xp.level,
+  }), [status.level, weeklyStreak.streak, readiness?.score, xp.level]);
+  const speech = useSpeech({ lines: speechLines });
 
   return (
     <div>
@@ -113,7 +97,7 @@ export default function Dashboard() {
             <div className="rounded-xl overflow-hidden" style={{ boxShadow: `0 0 20px ${status.glowColor}` }}>
               <AnimatedFace file="GodMode.jpg" fw={512} fh={512} size={96} duration={2.0} />
             </div>
-            <SpeechBubble lines={speechLines} delay={2500} displayDuration={5000} typeSpeed={30} />
+            <SpeechBubble visible={speech.visible} text={speech.text} typing={speech.typing} />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2.5 flex-wrap">

@@ -1,18 +1,7 @@
 import { useState } from 'react';
 import { useLifts, groupByDay } from '../lib/useLifts';
 import { normalizeLiftName } from '../lib/scoring';
-
-const LIFT_COLORS: Record<string, string> = {
-  bench: '#7986cb', squat: '#f06292', deadlift: '#81c784', ohp: '#ffd54f',
-  cgbench: '#b39ddb', incline_bench: '#64b5f6', front_squat: '#ce93d8', sumo_deadlift: '#a5d6a7',
-};
-
-const LIFT_LABELS: Record<string, string> = {
-  bench: 'Bench', squat: 'Squat', deadlift: 'Deadlift', ohp: 'OHP',
-  cgbench: 'CG Bench', incline_bench: 'Incline Bench', front_squat: 'Front Squat', sumo_deadlift: 'Sumo DL',
-  face_pulls: 'Face Pulls', pendlay_row: 'Pendlay Row', seated_row: 'Seated Row',
-  lateral_raise: 'Lateral Raise', bicep_curl: 'Bicep Curl', tricep_pushdown: 'Tricep Pushdown', leg_curl: 'Leg Curl',
-};
+import { LIFT_LABELS_SHORT as LIFT_LABELS, LIFT_COLORS } from '../lib/liftMeta';
 
 function getExpectedT2(t1Lift: string, hasOneRepAmrap: boolean): string | null {
   switch (t1Lift) {

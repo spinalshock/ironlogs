@@ -1,14 +1,6 @@
 import { useState } from 'react';
 import { useLifts, groupByDay, calcFatigue, getSleepProgression, getSleepStats } from '../lib/useLifts';
-
-const LIFT_LABELS: Record<string, string> = {
-  bench: 'Bench', squat: 'Squat', deadlift: 'Deadlift', ohp: 'OHP',
-  cgbench: 'CG Bench', incline_bench: 'Incline Bench', front_squat: 'Front Squat',
-  sumo_deadlift: 'Sumo DL', face_pulls: 'Face Pulls', pendlay_row: 'Pendlay Row',
-  seated_row: 'Seated Row', lateral_raise: 'Lateral Raise', bicep_curl: 'Bicep Curl',
-  tricep_pushdown: 'Tricep Pushdown', leg_curl: 'Leg Curl', farmers_walk: "Farmer's Walk",
-  chinup: 'Chin-up',
-};
+import { LIFT_LABELS_SHORT as LIFT_LABELS } from '../lib/liftMeta';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
