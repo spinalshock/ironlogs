@@ -50,8 +50,9 @@ export default function Goals() {
   const currentBW = getLatestBodyweight(entries);
   const targetBW = USER_CONFIG.targetBodyweight;
   const bwRemaining = Math.max(currentBW - targetBW, 0);
-  const startBW = 82;
-  const bwPct = bwRemaining <= 0 ? 100 : Math.min(Math.round(((startBW - currentBW) / (startBW - targetBW)) * 100), 100);
+  // For weight loss: show how close current is to target (lower = better)
+  // 100% when at or below target, 0% would be infinitely far
+  const bwPct = bwRemaining <= 0 ? 100 : Math.max(0, Math.min(Math.round((targetBW / currentBW) * 100), 99));
 
   return (
     <div>
