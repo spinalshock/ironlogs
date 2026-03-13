@@ -270,7 +270,8 @@ date,bodyweight,lift,weight,reps,set_type,notes,sleep
 2026-03-10,81.8,front_squat,45,3,t2,paused,6
 2026-03-10,81.8,front_squat,50,3,t2,paused,6
 2026-03-10,81.8,front_squat,50,3,t2,paused,6
-2026-03-10,81.8,front_squat,40,3,t2,paused,62026-03-10,81.8,farmers_walk,45,1,accessory,full lap,6
+2026-03-10,81.8,front_squat,40,3,t2,paused,6
+2026-03-10,81.8,farmers_walk,45,1,accessory,full lap,6
 2026-03-10,81.8,farmers_walk,45,1,accessory,half lap x2,6
 2026-03-12,82.6,bench,40,8,t1,,6
 2026-03-12,82.6,bench,45,6,t1,,6
@@ -288,7 +289,8 @@ date,bodyweight,lift,weight,reps,set_type,notes,sleep
 2026-03-12,82.6,ohp,35,7,t2,,6
 2026-03-12,82.6,ohp,35,4,t2,,6
 2026-03-12,82.6,ohp,35,6,t2,,6
-2026-03-12,82.6,ohp,35,8,t2,,62026-03-14,81.55,deadlift,80,5,t1,,5
+2026-03-12,82.6,ohp,35,8,t2,,6
+2026-03-14,81.55,deadlift,80,5,t1,,5
 2026-03-14,81.55,deadlift,90,3,t1,,5
 2026-03-14,81.55,deadlift,100,8,t1_amrap,programmed 1+,5
 2026-03-14,81.55,deadlift,95,3,t1,,5
