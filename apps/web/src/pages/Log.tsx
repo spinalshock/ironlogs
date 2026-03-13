@@ -3,6 +3,8 @@ import { addLift, exportLiftsAsCSV, clearLocalLifts } from '../lib/storage';
 import { normalizeLiftName } from '../lib/scoring';
 import { useLifts, groupByDay, calcWeeklyStreak } from '../lib/useLifts';
 import { calcXPProfile } from '../lib/gamification';
+import { useProgramData } from '../lib/useProgramData';
+import type { ComputedDay } from '@ironlogs/plugin-api';
 import WorkoutComplete from '../components/WorkoutComplete';
 
 interface ProgramSet {
@@ -47,42 +49,43 @@ const ACCESSORY_OPTIONS = [
   'tricep_pushdown', 'leg_curl', 'chinup', 'pendlay_row',
 ];
 
-function parseProgramJSON(data: any): ProgramDay[] {
-  return data.days.map((day: any) => {
-    // Skip rest days — no exercises to parse
-    if (day.rest) {
+function computedDaysToProgramDays(days: ComputedDay[]): ProgramDay[] {
+  return days.map((day) => {
+    if (day.rest || (!day.t1 && !day.t2)) {
       return { name: day.name, label: day.label, exercises: [] };
     }
 
     const exercises: ProgramExercise[] = [];
 
-    // T1
-    exercises.push({
-      lift: day.t1.lift,
-      label: LIFT_LABELS[day.t1.lift] || day.t1.lift,
-      sets: day.t1.sets.map((s: any) => {
-        const repsStr = String(s.reps);
-        const isAmrap = repsStr.includes('+');
-        return {
-          weight: s.weight,
-          reps: repsStr,
-          set_type: isAmrap ? 't1_amrap' : 't1',
-          note: isAmrap ? `programmed ${repsStr}` : '',
-        };
-      }),
-    });
+    if (day.t1) {
+      exercises.push({
+        lift: day.t1.lift,
+        label: LIFT_LABELS[day.t1.lift] || day.t1.lift,
+        sets: day.t1.sets.map((s) => {
+          const repsStr = String(s.reps);
+          const isAmrap = repsStr.includes('+');
+          return {
+            weight: s.weight,
+            reps: repsStr,
+            set_type: isAmrap ? 't1_amrap' : 't1',
+            note: isAmrap ? `programmed ${repsStr}` : '',
+          };
+        }),
+      });
+    }
 
-    // T2
-    exercises.push({
-      lift: day.t2.lift,
-      label: LIFT_LABELS[day.t2.lift] || day.t2.lift,
-      sets: day.t2.sets.map((s: any) => ({
-        weight: s.weight,
-        reps: String(s.reps),
-        set_type: 't2',
-        note: '',
-      })),
-    });
+    if (day.t2) {
+      exercises.push({
+        lift: day.t2.lift,
+        label: LIFT_LABELS[day.t2.lift] || day.t2.lift,
+        sets: day.t2.sets.map((s) => ({
+          weight: s.weight,
+          reps: String(s.reps),
+          set_type: 't2',
+          note: '',
+        })),
+      });
+    }
 
     return { name: day.name, label: day.label, exercises };
   });
@@ -193,7 +196,8 @@ function clearSession() {
 
 export default function Log() {
   const { entries, loading, refreshLocalLifts } = useLifts();
-  const [program, setProgram] = useState<ProgramDay[] | null>(null);
+  const { days: computedDays } = useProgramData();
+  const program = computedDaysToProgramDays(computedDays);
   const [selectedDay, setSelectedDay] = useState(0);
   const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
@@ -209,16 +213,9 @@ export default function Log() {
     levelBefore: number; levelAfter: number; progressBefore: number; progressAfter: number; streak: number;
   } | null>(null);
 
-  useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}data/nsuns-program.json`)
-      .then(r => r.json())
-      .then(data => setProgram(parseProgramJSON(data)))
-      .catch(() => setProgram(null));
-  }, []);
-
   // Restore saved session or detect next day
   useEffect(() => {
-    if (!program || loading) return;
+    if (loading) return;
     const saved = loadSession();
     if (saved && saved.workoutStarted) {
       setSelectedDay(saved.selectedDay);
@@ -234,7 +231,7 @@ export default function Log() {
   }, [program, entries, loading]);
 
   useEffect(() => {
-    if (!program || restoredFromSession) return;
+    if (restoredFromSession) return;
     setExercises(programDayToWorkout(program[selectedDay]));
     setWorkoutStarted(false);
   }, [program, selectedDay, restoredFromSession]);
@@ -322,7 +319,7 @@ export default function Log() {
 
       // Weekly streak for celebration screen
       const allSessions = groupByDay([...entries, ...completedSets]);
-      const trainingDays = program ? program.filter(d => d.exercises.length > 0).length : 6;
+      const trainingDays = program.filter(d => d.exercises.length > 0).length || 6;
       const ws = calcWeeklyStreak(allSessions, trainingDays);
 
       setCelebration({
@@ -340,10 +337,8 @@ export default function Log() {
       // Reset page state
       clearSession();
       setRestoredFromSession(false);
-      if (program) {
-        setExercises(programDayToWorkout(program[selectedDay]));
-        setWorkoutStarted(false);
-      }
+      setExercises(programDayToWorkout(program[selectedDay]));
+      setWorkoutStarted(false);
     } catch {
       setStatus('Error saving workout');
     } finally {
@@ -368,7 +363,7 @@ export default function Log() {
     setTimeout(() => setStatus(''), 3000);
   };
 
-  if (loading || !program) {
+  if (loading) {
     return (
       <div>
         <div className="skeleton w-[200px] h-8 mb-4" />

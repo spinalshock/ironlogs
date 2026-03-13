@@ -3,14 +3,11 @@ import { estimate1RM, normalizeLiftName, calcLiftScore } from '../lib/scoring';
 import { calcLiftFatigue } from '../lib/analytics';
 import { LIFT_LABELS, LIFT_COLORS } from '../lib/liftMeta';
 import { useProgramData } from '../lib/useProgramData';
-
-interface ProgramSet { weight: number; reps: string | number; }
-interface ProgramLift { lift: string; sets: ProgramSet[]; }
-interface ProgramDay { name: string; label: string; rest?: boolean; t1?: ProgramLift; t2?: ProgramLift; accessories?: string[]; }
+import type { ComputedSet, ComputedDay } from '@ironlogs/plugin-api';
 
 import { detectProgramDay } from '../lib/programDetection';
 
-function SetPill({ set, liftColor }: { set: ProgramSet; liftColor: string }) {
+function SetPill({ set, liftColor }: { set: ComputedSet; liftColor: string }) {
   const isAmrap = typeof set.reps === 'string' && String(set.reps).includes('+');
   return (
     <span className={`px-2 py-0.5 rounded text-sm ${isAmrap ? 'font-bold' : ''}`}
@@ -29,7 +26,7 @@ export default function TodaySession() {
 
   if (loading || programLoading || days.length === 0) return <p className="text-text-muted">Loading...</p>;
 
-  const program = { days: days as ProgramDay[] };
+  const program = { days };
 
   const sessions = groupByDay(entries);
   if (sessions.length === 0) return <p>No session data yet.</p>;
@@ -75,7 +72,7 @@ export default function TodaySession() {
     ];
     const restMsg = REST_MESSAGES[Math.floor(Math.random() * REST_MESSAGES.length)];
     // Find the next training day after the rest day
-    let nextTrainingDay: ProgramDay | null = null;
+    let nextTrainingDay: ComputedDay | null = null;
     for (let offset = 1; offset < program.days.length; offset++) {
       const candidate = program.days[(nextDayIndex + offset) % program.days.length];
       if (!candidate.rest) { nextTrainingDay = candidate; break; }

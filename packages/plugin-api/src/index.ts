@@ -26,28 +26,116 @@ export interface PluginAchievement {
   check: (entries: LiftEntry[]) => boolean;
 }
 
-/** Program template (set/rep scheme) */
-export interface ProgramSet {
+/** Computed program (absolute weights — what consumers use) */
+export interface ComputedSet {
   weight: number;
-  reps: string | number;
+  reps: number | string;
 }
 
-export interface ProgramLift {
+export interface ComputedLift {
   lift: string;
-  sets: ProgramSet[];
+  sets: ComputedSet[];
 }
 
-export interface ProgramDay {
+export interface ComputedDay {
   name: string;
   label: string;
-  primary: ProgramLift;
-  secondary: ProgramLift;
-  accessories: string[];
+  rest?: boolean;
+  t1?: ComputedLift;
+  t2?: ComputedLift;
+  accessories?: string[];
+}
+
+/** Program template (percentage-based, defined by plugins) */
+export interface TemplateSet {
+  /** Percentage of training max (e.g., 0.65 = 65%) */
+  pct: number;
+  reps: number | string;
+}
+
+export interface TemplateLift {
+  /** The actual lift performed (e.g., "cgbench", "front_squat") */
+  lift: string;
+  /** Which training max to use (e.g., "bench" for CG bench) */
+  tmLift: string;
+  sets: TemplateSet[];
+}
+
+export interface TemplateDay {
+  name: string;
+  label: string;
+  rest?: boolean;
+  t1?: TemplateLift;
+  t2?: TemplateLift;
+  accessories?: string[];
 }
 
 export interface ProgramTemplate {
+  id: string;
   name: string;
-  days: ProgramDay[];
+  description?: string;
+  /** Factor to derive TM from 1RM (e.g., 0.9 for nSuns) */
+  tmFactor: number;
+  /** Lifts that have training maxes */
+  tmLifts: string[];
+  days: TemplateDay[];
+}
+
+/** Training maxes keyed by lift name */
+export type TrainingMaxes = Record<string, number>;
+
+/** Round to nearest multiple (MROUND equivalent) */
+export function mround(value: number, multiple: number): number {
+  if (multiple === 0) return value;
+  return Math.round(value / multiple) * multiple;
+}
+
+/** Compute absolute weight from TM, percentage, and rounding factor */
+export function computeWeight(tm: number, pct: number, roundTo: number): number {
+  return mround(tm * pct, roundTo);
+}
+
+/** Compute a full program with absolute weights from a template + training maxes */
+export function computeProgram(
+  template: ProgramTemplate,
+  tms: TrainingMaxes,
+  roundTo: number,
+): ComputedDay[] {
+  return template.days.map((day) => {
+    if (day.rest) {
+      return { name: day.name, label: day.label, rest: true };
+    }
+
+    const result: ComputedDay = {
+      name: day.name,
+      label: day.label,
+      accessories: day.accessories,
+    };
+
+    if (day.t1) {
+      const tm = tms[day.t1.tmLift] ?? 0;
+      result.t1 = {
+        lift: day.t1.lift,
+        sets: day.t1.sets.map((s) => ({
+          weight: computeWeight(tm, s.pct, roundTo),
+          reps: s.reps,
+        })),
+      };
+    }
+
+    if (day.t2) {
+      const tm = tms[day.t2.tmLift] ?? 0;
+      result.t2 = {
+        lift: day.t2.lift,
+        sets: day.t2.sets.map((s) => ({
+          weight: computeWeight(tm, s.pct, roundTo),
+          reps: s.reps,
+        })),
+      };
+    }
+
+    return result;
+  });
 }
 
 /** CSV importer */
@@ -79,7 +167,7 @@ export interface IronLogsPlugin {
   /** Additional achievements */
   achievements?: PluginAchievement[];
 
-  /** Program templates */
+  /** Program templates (percentage-based) */
   programs?: ProgramTemplate[];
 
   /** CSV importers */

@@ -1,23 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
+import { computeProgram } from '@ironlogs/plugin-api';
+import type { ComputedDay } from '@ironlogs/plugin-api';
+import { NSUNS_5DAY_TEMPLATE } from '@ironlogs/plugin-nsuns';
+import { USER_CONFIG } from '../config';
 
 interface ProgramData {
-  days: any[];
+  days: ComputedDay[];
   trainingDaysPerWeek: number;
   loading: boolean;
 }
 
 export function useProgramData(): ProgramData {
-  const [data, setData] = useState<{ days: any[] } | null>(null);
+  const days = useMemo(
+    () => computeProgram(NSUNS_5DAY_TEMPLATE, USER_CONFIG.trainingMaxes, USER_CONFIG.roundTo),
+    [],
+  );
 
-  useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}data/nsuns-program.json`)
-      .then(r => r.json())
-      .then(setData)
-      .catch(() => {});
-  }, []);
+  const trainingDaysPerWeek = days.filter((d) => !d.rest).length || 6;
 
-  const days = data?.days ?? [];
-  const trainingDaysPerWeek = days.filter((d: any) => !d.rest).length || 6;
-
-  return { days, trainingDaysPerWeek, loading: !data };
+  return { days, trainingDaysPerWeek, loading: false };
 }
