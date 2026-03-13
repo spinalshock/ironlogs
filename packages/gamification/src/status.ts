@@ -1,10 +1,8 @@
 /**
- * Doomguy-inspired status face system for IronLogs.
+ * Training status system for IronLogs.
  *
- * Communicates training state instantly without numbers.
+ * Communicates training state via animated sprite avatars.
  * Based on readiness score (primary) and streak (modifier).
- *
- * Each face is a pixel-art SVG rendered inline — no external assets needed.
  */
 
 // ─── Types ─────────────────────────────────────────────────
@@ -15,10 +13,8 @@ export interface TrainingStatus {
   level: StatusLevel;
   label: string;
   message: string;
-  /** Pixel art face color (primary skin tone shifts with status) */
+  /** Status accent color (used for label text, indicators) */
   faceColor: string;
-  /** Eye color */
-  eyeColor: string;
   /** Background glow color */
   glowColor: string;
   /** Sprite sheet filename for AnimatedFace */
@@ -32,7 +28,6 @@ const STATUS_MAP: Record<StatusLevel, Omit<TrainingStatus, 'level'>> = {
     label: 'Bloodlust',
     message: 'Blood in the water. Go lift heavy.',
     faceColor: '#e57373',
-    eyeColor: '#ff1744',
     glowColor: 'rgba(255,23,68,0.3)',
     sprite: 'GodMode.jpg',
   },
@@ -40,7 +35,6 @@ const STATUS_MAP: Record<StatusLevel, Omit<TrainingStatus, 'level'>> = {
     label: 'Determined',
     message: 'Locked in. Execute the plan.',
     faceColor: '#ffb74d',
-    eyeColor: '#fff',
     glowColor: 'rgba(255,183,77,0.2)',
     sprite: 'Bloodlust.jpg',
   },
@@ -48,7 +42,6 @@ const STATUS_MAP: Record<StatusLevel, Omit<TrainingStatus, 'level'>> = {
     label: 'Steady',
     message: 'Consistent. Keep grinding.',
     faceColor: '#81c784',
-    eyeColor: '#fff',
     glowColor: 'rgba(129,199,132,0.15)',
     sprite: 'Determined.jpg',
   },
@@ -56,7 +49,6 @@ const STATUS_MAP: Record<StatusLevel, Omit<TrainingStatus, 'level'>> = {
     label: 'Tired',
     message: 'Recovery needed. Deload or rest.',
     faceColor: '#90a4ae',
-    eyeColor: '#78909c',
     glowColor: 'rgba(144,164,174,0.15)',
     sprite: 'SleepMode.png',
   },
@@ -64,7 +56,6 @@ const STATUS_MAP: Record<StatusLevel, Omit<TrainingStatus, 'level'>> = {
     label: 'Wrecked',
     message: 'Take a break. Seriously.',
     faceColor: '#78909c',
-    eyeColor: '#546e7a',
     glowColor: 'rgba(84,110,122,0.15)',
     sprite: 'Test.png',
   },
