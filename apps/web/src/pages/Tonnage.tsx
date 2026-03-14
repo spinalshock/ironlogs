@@ -178,7 +178,7 @@ function LiftSessionTable({ sessions, lift }: { sessions: DaySession[]; lift: st
         <tbody>
           {[...sessions].reverse().map((s) => {
             const sets = s.lifts.filter((l) => l.lift === lift || l.lift.toLowerCase().replace(/\s+/g, '_') === lift);
-            const topSet = sets.reduce((best, curr) => curr.weight > best.weight ? curr : best, sets[0]);
+            const topSet = sets.reduce((best, curr) => curr.weight > best.weight || (curr.weight === best.weight && curr.reps > best.reps) ? curr : best, sets[0]);
             return (
               <tr key={s.date}>
                 <td>{s.date}</td>
