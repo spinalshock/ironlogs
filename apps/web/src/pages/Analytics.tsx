@@ -81,9 +81,21 @@ function ReadinessCard({ readiness }: { readiness: ReadinessScore }) {
         </svg>
 
         <div className="flex gap-3 flex-wrap justify-center">
-          <div className="stat-card"><div className="label">Sleep</div><div className="value">{readiness.sleepComponent}%</div></div>
-          <div className="stat-card"><div className="label">Fatigue</div><div className="value">{readiness.fatigueComponent}%</div></div>
-          <div className="stat-card"><div className="label">AMRAP Trend</div><div className="value">{readiness.amrapComponent}%</div></div>
+          <div className="stat-card">
+            <div className="label">Sleep</div>
+            <div className="value">{readiness.sleepAvg}h</div>
+            <div className="text-xs opacity-40 mt-0.5">/ 8h target</div>
+          </div>
+          <div className="stat-card">
+            <div className="label">ACWR</div>
+            <div className="value">{readiness.acwr !== null ? readiness.acwr.toFixed(2) : '—'}</div>
+            <div className="text-xs opacity-40 mt-0.5">{readiness.acwr !== null ? (readiness.acwr >= 0.8 && readiness.acwr <= 1.3 ? 'optimal' : readiness.acwr < 0.8 ? 'undertrained' : 'overreaching') : '< 21 days data'}</div>
+          </div>
+          <div className="stat-card">
+            <div className="label">AMRAP Surplus</div>
+            <div className="value">{readiness.amrapSurplusAvg !== null ? `+${readiness.amrapSurplusAvg}` : '—'}</div>
+            <div className="text-xs opacity-40 mt-0.5">{readiness.amrapSurplusAvg !== null ? 'avg reps above target' : '< 2 AMRAP sets'}</div>
+          </div>
         </div>
       </div>
     </div>

@@ -231,7 +231,7 @@ export function getAmrapTrends(entries: LiftEntry[]): AmrapTrend[] {
 
 // ─── Readiness Score ─────────────────────────────────────
 
-export interface ReadinessScore { score: number; sleepComponent: number; fatigueComponent: number; amrapComponent: number; label: string; color: string; }
+export interface ReadinessScore { score: number; sleepComponent: number; fatigueComponent: number; amrapComponent: number; sleepAvg: number; acwr: number | null; amrapSurplusAvg: number | null; label: string; color: string; }
 
 /**
  * Calculate a composite training readiness score (0-100).
@@ -259,6 +259,7 @@ export function calcReadiness(entries: LiftEntry[]): ReadinessScore | null {
   const totalDays = Math.floor((today.getTime() - earliestDate.getTime()) / 86400000);
 
   let fatigueComponent = 0.7;
+  let computedAcwr: number | null = null;
   if (totalDays >= 21) {
     const tonnageByDate = new Map<string, number>();
     for (const s of sessions) tonnageByDate.set(s.date, s.tonnage);
@@ -275,10 +276,10 @@ export function calcReadiness(entries: LiftEntry[]): ReadinessScore | null {
       d.setDate(d.getDate() + 1);
     }
     if (chronic > 0) {
-      const acwr = acute / chronic;
-      if (acwr >= 0.8 && acwr <= 1.3) fatigueComponent = 1.0;
-      else if (acwr < 0.8) fatigueComponent = Math.max(0.3, acwr / 0.8);
-      else fatigueComponent = Math.max(0.2, 1.0 - (acwr - 1.3) * 2);
+      computedAcwr = Math.round((acute / chronic) * 100) / 100;
+      if (computedAcwr >= 0.8 && computedAcwr <= 1.3) fatigueComponent = 1.0;
+      else if (computedAcwr < 0.8) fatigueComponent = Math.max(0.3, computedAcwr / 0.8);
+      else fatigueComponent = Math.max(0.2, 1.0 - (computedAcwr - 1.3) * 2);
     }
   }
 
@@ -298,7 +299,8 @@ export function calcReadiness(entries: LiftEntry[]): ReadinessScore | null {
   else if (score >= 40) { label = 'Moderate'; color = '#ffa726'; }
   else { label = 'Fatigued'; color = '#ef5350'; }
 
-  return { score, sleepComponent: Math.round(sleepComponent * 100), fatigueComponent: Math.round(fatigueComponent * 100), amrapComponent: Math.round(amrapComponent * 100), label, color };
+  const amrapSurplusAvg = recent.length >= 2 ? Math.round(recent.reduce((s, d) => s + d.surplus, 0) / recent.length * 10) / 10 : null;
+  return { score, sleepComponent: Math.round(sleepComponent * 100), fatigueComponent: Math.round(fatigueComponent * 100), amrapComponent: Math.round(amrapComponent * 100), sleepAvg: Math.round(sleepAvg * 10) / 10, acwr: computedAcwr, amrapSurplusAvg, label, color };
 }
 
 // ─── Strength Balance Ratios ─────────────────────────────

@@ -24,6 +24,59 @@ function isFailedSet(notes: string): boolean {
   return /failed/.test(n) || /got \d+/.test(n);
 }
 
+/**
+ * Parse plan info from notes. Returns { plan, remaining } where plan is the
+ * programmed weight×reps string (for display) and remaining is leftover note text.
+ *
+ * Patterns handled:
+ *   "programmed 1+"          → AMRAP target: plan="1+"
+ *   "programmed 25x5"        → plan="25kg × 5"
+ *   "programmed 25"          → plan="25kg"
+ *   "programmed 6 got 5"     → plan="× 6", remaining="got 5"
+ *   "programmed 35x8+ did 30x8" → plan="35kg × 8+", remaining="did 30x8"
+ */
+function parsePlan(notes: string, isAmrap: boolean): { plan: string | null; amrapTarget: number | null; remaining: string } {
+  if (!notes) return { plan: null, amrapTarget: null, remaining: '' };
+  const trimmed = notes.trim();
+
+  // AMRAP: "programmed 1+", "programmed 5+"
+  const amrapMatch = trimmed.match(/^programmed\s+(\d+)\+(.*)$/);
+  if (amrapMatch) {
+    return { plan: `${amrapMatch[1]}+`, amrapTarget: parseInt(amrapMatch[1]), remaining: amrapMatch[2].trim() };
+  }
+
+  // Weight x reps with +: "programmed 35x8+ did 30x8"
+  const wxrPlusMatch = trimmed.match(/^programmed\s+(\d+)x(\d+)\+\s*(.*)$/);
+  if (wxrPlusMatch) {
+    return { plan: `${wxrPlusMatch[1]}kg \u00d7 ${wxrPlusMatch[2]}+`, amrapTarget: null, remaining: wxrPlusMatch[3].trim() };
+  }
+
+  // Weight x reps: "programmed 25x5"
+  const wxrMatch = trimmed.match(/^programmed\s+(\d+)x(\d+)\s*(.*)$/);
+  if (wxrMatch) {
+    return { plan: `${wxrMatch[1]}kg \u00d7 ${wxrMatch[2]}`, amrapTarget: null, remaining: wxrMatch[3].trim() };
+  }
+
+  // Reps only with outcome: "programmed 6 got 5"
+  const repsGotMatch = trimmed.match(/^programmed\s+(\d+)\s+(got\s+.*)$/);
+  if (repsGotMatch) {
+    return { plan: `\u00d7 ${repsGotMatch[1]}`, amrapTarget: null, remaining: repsGotMatch[2].trim() };
+  }
+
+  // Weight only: "programmed 25"
+  const weightMatch = trimmed.match(/^programmed\s+(\d+)\s*$/);
+  if (weightMatch) {
+    return { plan: `${weightMatch[1]}kg`, amrapTarget: null, remaining: '' };
+  }
+
+  // Freeform "programmed" note we can't parse — show as note
+  if (/^programmed/i.test(trimmed)) {
+    return { plan: null, amrapTarget: null, remaining: trimmed.replace(/^programmed\s*/i, '') };
+  }
+
+  return { plan: null, amrapTarget: null, remaining: trimmed };
+}
+
 function SessionCard({ session }: { session: ReturnType<typeof groupByDay>[0] }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -62,18 +115,29 @@ function SessionCard({ session }: { session: ReturnType<typeof groupByDay>[0] })
     if (expectedT2 && !t2TopSets.has(expectedT2)) t2Skipped = expectedT2;
   }
 
-  const failedSets = session.lifts.filter((l) => isFailedSet(l.notes)).map((l) => ({ lift: normalizeLiftName(l.lift), weight: l.weight, reps: l.reps, note: l.notes.trim() }));
-  const notes = session.lifts.filter((l) => l.notes && l.notes.trim() && !isFailedSet(l.notes)).map((l) => ({
-    lift: normalizeLiftName(l.lift), label: LIFT_LABELS[normalizeLiftName(l.lift)] || l.lift,
-    weight: l.weight, reps: l.reps, note: l.notes.trim(),
-  }));
-
   const dayShort = getDayOfWeek(session.date).slice(0, 3);
-  const dateShort = session.date.slice(5); // "03-10"
+  const dateShort = session.date.slice(5);
+
+  // Build table data: group sets by lift, track set # per lift
+  const buildTableRows = () => {
+    const liftSetNum = new Map<string, number>();
+    return session.lifts.map((l, i) => {
+      const name = normalizeLiftName(l.lift);
+      const num = (liftSetNum.get(name) || 0) + 1;
+      liftSetNum.set(name, num);
+      const prevName = i > 0 ? normalizeLiftName(session.lifts[i - 1].lift) : null;
+      const isAmrap = l.set_type === 't1_amrap';
+      const typeLabel =
+        l.set_type === 't2' ? 'T2' :
+        l.set_type === 'accessory' ? 'ACC' :
+        l.set_type === 'testing' ? 'TEST' : '';
+      return { entry: l, name, num, isFirstOfLift: name !== prevName, isAmrap, typeLabel };
+    });
+  };
 
   return (
-    <div className="p-3 rounded-lg border border-border cursor-pointer transition-colors" onClick={() => setExpanded(!expanded)}>
-      <div className="flex items-start gap-3">
+    <div className="p-3 rounded-lg border border-border transition-colors">
+      <div className="flex items-start gap-3 cursor-pointer" onClick={() => setExpanded(!expanded)}>
         {/* Date column */}
         <div className="shrink-0 text-center" style={{ minWidth: '2.5rem' }}>
           <div className="text-xs opacity-50 uppercase">{dayShort}</div>
@@ -100,6 +164,7 @@ function SessionCard({ session }: { session: ReturnType<typeof groupByDay>[0] })
 
       {expanded && (
         <div className="mt-3">
+          {/* T1/T2 top set summary badges */}
           {t1TopSets.size > 0 && (
             <div className="flex gap-2 flex-wrap mb-2">
               <span className="text-xs opacity-50 self-center mr-1">T1</span>
@@ -132,20 +197,73 @@ function SessionCard({ session }: { session: ReturnType<typeof groupByDay>[0] })
               </span>
             </div>
           )}
-          {(failedSets.length > 0 || notes.length > 0) && (
-            <div className="border-t border-border pt-2">
-              {failedSets.map((f, i) => (
-                <div key={`fail-${i}`} className="text-sm py-0.5" style={{ color: '#ef9a9a' }}>
-                  <span className="mr-2">{LIFT_LABELS[f.lift] || f.lift} {f.weight}kg x {f.reps}</span>{f.note}
-                </div>
-              ))}
-              {notes.map((n, i) => (
-                <div key={i} className="text-sm opacity-80 py-0.5">
-                  <span className="mr-2" style={{ color: LIFT_COLORS[n.lift] || '#999' }}>{n.label} {n.weight}kg x {n.reps}</span>{n.note}
-                </div>
-              ))}
-            </div>
-          )}
+
+          {/* Full session log */}
+          <table className="w-full text-sm" style={{ borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+            <thead>
+              <tr className="text-xs" style={{ borderBottom: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)' }}>
+                <th className="text-center font-normal py-1.5" style={{ width: '8%' }}>#</th>
+                <th className="text-center font-normal py-1.5" style={{ width: '27%' }}>Lift</th>
+                <th className="text-center font-normal py-1.5" style={{ width: '17%' }}>Weight</th>
+                <th className="text-center font-normal py-1.5" style={{ width: '15%' }}>Reps</th>
+                <th className="text-center font-normal py-1.5" style={{ width: '33%' }}>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              {buildTableRows().map((row, i) => {
+                const { entry: l, name, num, isFirstOfLift, isAmrap, typeLabel } = row;
+                const { amrapTarget, remaining } = parsePlan(l.notes, isAmrap);
+                const surplus = amrapTarget !== null ? l.reps - amrapTarget : null;
+                const failed = isFailedSet(l.notes);
+
+                return (
+                  <tr key={i} style={isFirstOfLift && i > 0 ? { borderTop: '1px solid rgba(255,255,255,0.08)' } : undefined}>
+                    <td className="py-0.5 text-center text-xs tabular-nums" style={{ color: 'rgba(255,255,255,0.3)' }}>{num}</td>
+                    <td className="py-0.5 text-center" style={{ color: LIFT_COLORS[name] || '#ccc' }}>
+                      {isFirstOfLift ? (
+                        <>
+                          <span className="font-medium">{LIFT_LABELS[name] || name}</span>
+                          {typeLabel && <span className="text-xs ml-1.5" style={{ color: 'rgba(255,255,255,0.45)' }}>{typeLabel}</span>}
+                        </>
+                      ) : null}
+                    </td>
+                    <td
+                      className={`py-0.5 tabular-nums text-center whitespace-nowrap${isAmrap ? ' font-semibold' : ''}`}
+                      style={failed ? { color: '#ef9a9a' } : undefined}
+                    >
+                      {l.weight}kg
+                    </td>
+                    <td
+                      className={`py-0.5 tabular-nums text-center${isAmrap ? ' font-semibold' : ''}`}
+                      style={failed ? { color: '#ef9a9a' } : undefined}
+                    >
+                      {l.reps}
+                    </td>
+                    <td className="py-0.5 text-center text-xs">
+                      {isAmrap && amrapTarget !== null && (
+                        <span
+                          className="font-medium"
+                          style={{ color: surplus !== null && surplus > 0 ? '#66bb6a' : surplus !== null && surplus < 0 ? '#ef9a9a' : '#ffca28' }}
+                        >
+                          {amrapTarget}+
+                          {surplus !== null && surplus !== 0 && (
+                            <span className="ml-0.5">({surplus > 0 ? '+' : ''}{surplus})</span>
+                          )}
+                        </span>
+                      )}
+                      {failed && <span style={{ color: '#ef9a9a' }} className="font-medium">failed </span>}
+                      {remaining && !failed && (
+                        <span className={`${isAmrap && amrapTarget !== null ? 'ml-1.5 ' : ''}`} style={{ color: 'rgba(255,255,255,0.55)' }}>{remaining}</span>
+                      )}
+                      {failed && remaining && (
+                        <span className="ml-1" style={{ color: 'rgba(255,255,255,0.55)' }}>{remaining.replace(/failed\s*/i, '')}</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
