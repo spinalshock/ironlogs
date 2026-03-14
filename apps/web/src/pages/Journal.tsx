@@ -35,7 +35,7 @@ function isFailedSet(notes: string): boolean {
  *   "programmed 6 got 5"     → plan="× 6", remaining="got 5"
  *   "programmed 35x8+ did 30x8" → plan="35kg × 8+", remaining="did 30x8"
  */
-function parsePlan(notes: string, isAmrap: boolean): { plan: string | null; amrapTarget: number | null; remaining: string } {
+function parsePlan(notes: string, _isAmrap: boolean): { plan: string | null; amrapTarget: number | null; remaining: string } {
   if (!notes) return { plan: null, amrapTarget: null, remaining: '' };
   const trimmed = notes.trim();
 
