@@ -15,8 +15,8 @@ export const USER_CONFIG = {
    *  Set weights = MROUND(TM × pct, roundTo). */
   trainingMaxes: {
     bench: 62.5,
-    squat: 80,
-    deadlift: 105,
-    ohp: 50,
+    squat: 82.5,
+    deadlift: 110,
+    ohp: 52.5,
   },
 };
