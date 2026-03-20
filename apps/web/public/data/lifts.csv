@@ -363,3 +363,17 @@ date,bodyweight,lift,weight,reps,set_type,notes,sleep
 2026-03-17,82.55,cgbench,40,8,t2,,6.5
 2026-03-17,82.55,face_pulls,57,10,accessory,,6.5
 2026-03-17,82.55,face_pulls,64,10,accessory,,6.5
+2026-03-19,83,deadlift,70,3,t1,,5
+2026-03-19,83,deadlift,80,3,t1,,5
+2026-03-19,83,deadlift,90,3,t1_amrap,programmed 3+,5
+2026-03-19,83,deadlift,100,3,t1,,5
+2026-03-19,83,deadlift,110,3,t1,,5
+2026-03-19,83,deadlift,100,3,t1,,5
+2026-03-19,83,deadlift,90,3,t1,,5
+2026-03-19,83,deadlift,70,3,t1,,5
+2026-03-19,83,front_squat,40,3,t2,,5
+2026-03-19,83,front_squat,45,3,t2,,5
+2026-03-19,83,front_squat,45,3,t2,,5
+2026-03-19,83,front_squat,45,3,t2,,5
+2026-03-19,83,front_squat,40,3,t2,,5
+2026-03-19,83,front_squat,40,3,t2,,5
