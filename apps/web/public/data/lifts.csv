@@ -394,3 +394,33 @@ date,bodyweight,lift,weight,reps,set_type,notes,sleep
 2026-03-20,83,ohp,35,4,t2,,4
 2026-03-20,83,ohp,35,6,t2,,4
 2026-03-20,83,ohp,35,6,t2,,4
+2026-03-24,82.6,deadlift,85,5,t1,,7
+2026-03-24,82.6,deadlift,95,3,t1,,7
+2026-03-24,82.6,deadlift,105,5,t1_amrap,programmed 1+,7
+2026-03-24,82.6,deadlift,100,3,t1,,7
+2026-03-24,82.6,deadlift,95,3,t1,,7
+2026-03-24,82.6,deadlift,90,3,t1,,7
+2026-03-24,82.6,deadlift,85,3,t1,,7
+2026-03-24,82.6,deadlift,75,3,t1,,7
+2026-03-24,82.6,deadlift,70,5,t1_amrap,programmed 3+,7
+2026-03-24,82.6,farmers_walk,40,1,accessory,,7
+2026-03-24,82.6,farmers_walk,40,1,accessory,,7
+2026-03-25,83.4,ohp,40,5,t1,,5
+2026-03-25,83.4,ohp,45,3,t1,,5
+2026-03-25,83.4,ohp,50,3,t1_amrap,programmed 1+,5
+2026-03-25,83.4,ohp,45,3,t1,,5
+2026-03-25,83.4,ohp,45,3,t1,,5
+2026-03-25,83.4,ohp,40,3,t1,,5
+2026-03-25,83.4,ohp,40,5,t1,,5
+2026-03-25,83.4,ohp,35,5,t1,,5
+2026-03-25,83.4,ohp,35,10,t1_amrap,programmed 5+,5
+2026-03-25,83.4,incline_bench,25,6,t2,,5
+2026-03-25,83.4,incline_bench,35,5,t2,,5
+2026-03-25,83.4,incline_bench,40,3,t2,,5
+2026-03-25,83.4,incline_bench,40,5,t2,,5
+2026-03-25,83.4,incline_bench,40,7,t2,,5
+2026-03-25,83.4,incline_bench,40,4,t2,,5
+2026-03-25,83.4,incline_bench,40,6,t2,,5
+2026-03-25,83.4,incline_bench,40,8,t2,,5
+2026-03-25,83.4,face_pulls,57,10,accessory,,5
+2026-03-25,83.4,face_pulls,64,6,accessory,,5
