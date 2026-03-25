@@ -173,17 +173,17 @@ interface SavedSession {
 }
 
 function saveSession(data: SavedSession) {
-  try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(data)); } catch {}
+  try { localStorage.setItem(SESSION_KEY, JSON.stringify(data)); } catch {}
 }
 
 function loadSession(): SavedSession | null {
   try {
-    const raw = sessionStorage.getItem(SESSION_KEY);
+    const raw = localStorage.getItem(SESSION_KEY);
     if (!raw) return null;
     const data = JSON.parse(raw) as SavedSession;
     // Only restore if from today
     if (data.date !== new Date().toISOString().slice(0, 10)) {
-      sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(SESSION_KEY);
       return null;
     }
     return data;
@@ -191,7 +191,7 @@ function loadSession(): SavedSession | null {
 }
 
 function clearSession() {
-  sessionStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem(SESSION_KEY);
 }
 
 export default function Log() {
