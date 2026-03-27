@@ -424,3 +424,12 @@ date,bodyweight,lift,weight,reps,set_type,notes,sleep
 2026-03-25,83.4,incline_bench,40,8,t2,,5
 2026-03-25,83.4,face_pulls,57,10,accessory,,5
 2026-03-25,83.4,face_pulls,64,6,accessory,,5
+2026-03-26,82.3,squat,40,3,warmup,,6
+2026-03-26,82.3,squat,50,3,warmup,,6
+2026-03-26,82.3,squat,60,3,t1,,6
+2026-03-26,82.3,squat,70,3,t1,,6
+2026-03-26,82.3,squat,80,3,t1_amrap,programmed 1+,6
+2026-03-26,82.3,squat,75,3,t1,,6
+2026-03-26,82.3,squat,70,3,t1,,6
+2026-03-26,82.3,squat,65,3,t1,,6
+2026-03-26,82.3,squat,60,3,t1,,6
