@@ -17,15 +17,29 @@ export function getNextDayIndex(days: ComputedDay[], entries: LiftEntry[]): numb
   const sessions = groupByDay(entries);
   if (sessions.length === 0 || days.length === 0) return 0;
 
-  const last = sessions[sessions.length - 1];
-  const t1Lifts = last.lifts.filter((l) => l.set_type === 't1' || l.set_type === 't1_amrap');
+  // Find the last program session (has a t1_amrap set — actual programmed work).
+  // Non-program sessions (testing, accessories-only) don't drive day detection,
+  // but each one counts as advancing one program day.
+  let programIdx = sessions.length - 1;
+  let sessionsAfter = 0;
+  while (programIdx >= 0) {
+    if (sessions[programIdx].lifts.some((l) => l.set_type === 't1_amrap')) break;
+    programIdx--;
+    sessionsAfter++;
+  }
+  if (programIdx < 0) return 0;
+
+  const programSession = sessions[programIdx];
+  const t1Lifts = programSession.lifts.filter(
+    (l) => l.set_type === 't1' || l.set_type === 't1_amrap',
+  );
   if (t1Lifts.length === 0) return 0;
 
   const lastT1 = normalizeLiftName(t1Lifts[0].lift);
 
   // Programs with duplicate T1 lifts (e.g., nSuns has bench twice) need
   // disambiguation. We check if the session had a 1+ AMRAP to narrow it down.
-  const hadOnePlus = last.lifts.some(
+  const hadOnePlus = programSession.lifts.some(
     (l) => l.set_type === 't1_amrap' && /programmed\s+1\+/.test(l.notes),
   );
 
@@ -54,7 +68,7 @@ export function getNextDayIndex(days: ComputedDay[], entries: LiftEntry[]): numb
     lastDayIndex = refined ?? matches[0];
   }
 
-  return (lastDayIndex + 1) % days.length;
+  return (lastDayIndex + 1 + sessionsAfter) % days.length;
 }
 
 /**

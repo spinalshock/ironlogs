@@ -477,3 +477,19 @@ date,bodyweight,lift,weight,reps,set_type,notes,sleep
 2026-03-31,81.5,deadlift,130,0,testing,failed,7
 2026-03-31,81.5,deadlift,130,0,testing,failed,7
 2026-03-31,81.5,deadlift,130,0,testing,failed,7
+2026-04-01,82,ohp,40,5,t1,,5
+2026-04-01,82,ohp,45,3,t1,,5
+2026-04-01,82,ohp,50,4,t1_amrap,programmed 1+,5
+2026-04-01,82,ohp,50,1,t1,,5
+2026-04-01,82,ohp,45,3,t1,,5
+2026-04-01,82,ohp,40,3,t1,,5
+2026-04-01,82,ohp,40,5,t1,,5
+2026-04-01,82,ohp,35,5,t1,,5
+2026-04-01,82,ohp,35,10,t1_amrap,programmed 5+,5
+2026-04-01,82,incline_bench,25,6,t2,,5
+2026-04-01,82,incline_bench,35,5,t2,,5
+2026-04-01,82,incline_bench,40,3,t2,,5
+2026-04-01,82,incline_bench,40,5,t2,,5
+2026-04-01,82,incline_bench,40,7,t2,,5
+2026-04-01,82,incline_bench,40,4,t2,,5
+2026-04-01,82,incline_bench,40,8,t2,,5
