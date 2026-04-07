@@ -16,7 +16,7 @@ export const USER_CONFIG = {
   trainingMaxes: {
     bench: 67.5,
     squat: 82.5,
-    deadlift: 115,
-    ohp: 52.5,
+    deadlift: 117.5,
+    ohp: 55,
   },
 };
