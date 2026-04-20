@@ -14,7 +14,7 @@ export const USER_CONFIG = {
   /** Training maxes — increase by 2.5kg on successful AMRAP each week.
    *  Set weights = MROUND(TM × pct, roundTo). */
   trainingMaxes: {
-    bench: 67.5,
+    bench: 70,
     squat: 82.5,
     deadlift: 117.5,
     ohp: 55,
