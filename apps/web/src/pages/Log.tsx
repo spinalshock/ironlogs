@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { addLift, exportLiftsAsCSV, clearLocalLifts } from '../lib/storage';
 import { normalizeLiftName } from '../lib/scoring';
 import { useLifts, groupByDay, calcWeeklyStreak } from '../lib/useLifts';
@@ -92,7 +92,6 @@ function computedDaysToProgramDays(days: ComputedDay[]): ProgramDay[] {
 }
 
 function nextTrainingDay(index: number, programDays: ProgramDay[]): number {
-  // Skip past rest days to find next training day
   let next = index;
   for (let i = 0; i < programDays.length; i++) {
     if (programDays[next].exercises.length > 0) return next;
@@ -163,26 +162,40 @@ function createEmptyExercise(lift: string): WorkoutExercise {
 
 const SESSION_KEY = 'ironlogs-log-session';
 
-interface SavedSession {
-  exercises: WorkoutExercise[];
+interface SessionState {
   selectedDay: number;
+  exercises: WorkoutExercise[];
   date: string;
   bodyweight: string;
   sleep: string;
   workoutStarted: boolean;
 }
 
-function saveSession(data: SavedSession) {
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function freshSession(day: number, program: ProgramDay[]): SessionState {
+  return {
+    selectedDay: day,
+    exercises: programDayToWorkout(program[day]),
+    date: todayISO(),
+    bodyweight: '',
+    sleep: '',
+    workoutStarted: false,
+  };
+}
+
+function saveSession(data: SessionState) {
   try { localStorage.setItem(SESSION_KEY, JSON.stringify(data)); } catch {}
 }
 
-function loadSession(): SavedSession | null {
+function loadSession(): SessionState | null {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
     if (!raw) return null;
-    const data = JSON.parse(raw) as SavedSession;
-    // Only restore if from today
-    if (data.date !== new Date().toISOString().slice(0, 10)) {
+    const data = JSON.parse(raw) as SessionState;
+    if (data.date !== todayISO()) {
       localStorage.removeItem(SESSION_KEY);
       return null;
     }
@@ -194,109 +207,117 @@ function clearSession() {
   localStorage.removeItem(SESSION_KEY);
 }
 
+// Deep-clone helper for exercises so set-level mutations are safe.
+function cloneExercises(exercises: WorkoutExercise[]): WorkoutExercise[] {
+  return exercises.map(ex => ({ ...ex, sets: ex.sets.map(s => ({ ...s })) }));
+}
+
 export default function Log() {
   const { entries, loading, refreshLocalLifts } = useLifts();
   const { days: computedDays } = useProgramData();
   const program = useMemo(() => computedDaysToProgramDays(computedDays), [computedDays]);
-  const [selectedDay, setSelectedDay] = useState(0);
-  const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [bodyweight, setBodyweight] = useState('');
-  const [sleep, setSleep] = useState('');
+
+  const [session, setSession] = useState<SessionState | null>(null);
   const [status, setStatus] = useState('');
   const [saving, setSaving] = useState(false);
-  const [workoutStarted, setWorkoutStarted] = useState(false);
   const [showAddExercise, setShowAddExercise] = useState(false);
-  const restoredFromSession = useRef(false);
   const [celebration, setCelebration] = useState<{
     sets: number; xpGained: number; xpBefore: number; xpAfter: number;
     levelBefore: number; levelAfter: number; progressBefore: number; progressAfter: number; streak: number;
   } | null>(null);
 
-  // Restore saved session or detect next day
+  // One-shot init: once data is loaded, restore today's saved session or start fresh on the next day.
   useEffect(() => {
-    if (loading) return;
+    if (loading || session) return;
     const saved = loadSession();
     if (saved && saved.workoutStarted) {
-      restoredFromSession.current = true;
-      setSelectedDay(saved.selectedDay);
-      setExercises(saved.exercises);
-      setBodyweight(saved.bodyweight);
-      setSleep(saved.sleep);
-      setDate(saved.date);
-      setWorkoutStarted(true);
+      setSession(saved);
     } else {
-      setSelectedDay(detectNextDay(entries, program));
+      setSession(freshSession(detectNextDay(entries, program), program));
     }
-  }, [program, entries, loading]);
+  }, [loading, session, entries, program]);
 
+  // Single source of truth for persistence: write when a workout is in progress, clear otherwise.
   useEffect(() => {
-    if (restoredFromSession.current) return;
-    setExercises(programDayToWorkout(program[selectedDay]));
-    setWorkoutStarted(false);
-  }, [program, selectedDay]);
-
-  // Persist workout state on every change
-  useEffect(() => {
-    if (!workoutStarted) return;
-    saveSession({ exercises, selectedDay, date, bodyweight, sleep, workoutStarted });
-  }, [exercises, selectedDay, date, bodyweight, sleep, workoutStarted]);
+    if (!session) return;
+    if (session.workoutStarted) saveSession(session);
+    else clearSession();
+  }, [session]);
 
   const updateSet = useCallback((exIdx: number, setIdx: number, field: 'weight' | 'reps', value: string) => {
-    setExercises(prev => {
-      const next = prev.map(ex => ({ ...ex, sets: ex.sets.map(s => ({ ...s })) }));
-      next[exIdx].sets[setIdx][field] = value;
-      return next;
+    setSession(s => {
+      if (!s) return s;
+      const exercises = cloneExercises(s.exercises);
+      exercises[exIdx].sets[setIdx][field] = value;
+      return { ...s, exercises };
     });
   }, []);
 
   const toggleDone = useCallback((exIdx: number, setIdx: number) => {
-    setExercises(prev => {
-      const next = prev.map(ex => ({ ...ex, sets: ex.sets.map(s => ({ ...s })) }));
-      const set = next[exIdx].sets[setIdx];
-      if (!set.done && set.isAmrap && !set.reps) return prev;
-      if (!set.done && (!set.weight || !set.reps)) return prev;
+    setSession(s => {
+      if (!s) return s;
+      const exercises = cloneExercises(s.exercises);
+      const set = exercises[exIdx].sets[setIdx];
+      if (!set.done && set.isAmrap && !set.reps) return s;
+      if (!set.done && (!set.weight || !set.reps)) return s;
       set.done = !set.done;
-      if (!workoutStarted) setWorkoutStarted(true);
-      return next;
+      return { ...s, exercises, workoutStarted: true };
     });
-  }, [workoutStarted]);
+  }, []);
 
   const addSet = useCallback((exIdx: number) => {
-    setExercises(prev => {
-      const next = prev.map(ex => ({ ...ex, sets: ex.sets.map(s => ({ ...s })) }));
-      const lastSet = next[exIdx].sets[next[exIdx].sets.length - 1];
-      next[exIdx].sets.push({
+    setSession(s => {
+      if (!s) return s;
+      const exercises = cloneExercises(s.exercises);
+      const sets = exercises[exIdx].sets;
+      const lastSet = sets[sets.length - 1];
+      sets.push({
         weight: lastSet?.weight || '', reps: '', done: false,
-        set_type: next[exIdx].sets[0]?.set_type || 'accessory',
+        set_type: sets[0]?.set_type || 'accessory',
         note: '', isAmrap: false, targetLabel: '',
       });
-      return next;
+      return { ...s, exercises };
     });
   }, []);
 
   const addExercise = useCallback((lift: string) => {
-    setExercises(prev => [...prev, createEmptyExercise(lift)]);
+    setSession(s => s ? { ...s, exercises: [...s.exercises, createEmptyExercise(lift)] } : s);
     setShowAddExercise(false);
   }, []);
 
   const removeExercise = useCallback((exIdx: number) => {
-    setExercises(prev => prev.filter((_, i) => i !== exIdx));
+    setSession(s => s ? { ...s, exercises: s.exercises.filter((_, i) => i !== exIdx) } : s);
+  }, []);
+
+  const selectDay = useCallback((day: number) => {
+    setSession(s => {
+      if (!s || s.selectedDay === day) return s;
+      return {
+        ...s,
+        selectedDay: day,
+        exercises: programDayToWorkout(program[day]),
+        workoutStarted: false,
+      };
+    });
+  }, [program]);
+
+  const setField = useCallback((field: 'date' | 'bodyweight' | 'sleep', value: string) => {
+    setSession(s => s ? { ...s, [field]: value } : s);
   }, []);
 
   const finishWorkout = async () => {
-    if (saving) return;
+    if (saving || !session) return;
 
-    const completedSets = exercises.flatMap(ex =>
+    const completedSets = session.exercises.flatMap(ex =>
       ex.sets.filter(s => s.done).map(s => ({
-        date,
-        bodyweight: parseFloat(bodyweight) || 0,
+        date: session.date,
+        bodyweight: parseFloat(session.bodyweight) || 0,
         lift: normalizeLiftName(ex.lift),
         weight: parseFloat(s.weight),
         reps: parseInt(s.reps),
         set_type: s.set_type,
         notes: s.note,
-        sleep: parseFloat(sleep) || 0,
+        sleep: parseFloat(session.sleep) || 0,
       }))
     );
 
@@ -308,16 +329,13 @@ export default function Log() {
 
     setSaving(true);
     try {
-      // Snapshot XP before saving
       const xpBefore = calcXPProfile(entries);
 
       for (const set of completedSets) await addLift(set);
       await refreshLocalLifts();
 
-      // Calculate XP after (entries won't have updated yet, so simulate)
       const xpAfter = calcXPProfile([...entries, ...completedSets]);
 
-      // Weekly streak for celebration screen
       const allSessions = groupByDay([...entries, ...completedSets]);
       const trainingDays = program.filter(d => d.exercises.length > 0).length || 6;
       const ws = calcWeeklyStreak(allSessions, trainingDays);
@@ -334,11 +352,12 @@ export default function Log() {
         streak: ws.currentWeekSessions,
       });
 
-      // Reset page state
-      clearSession();
-      restoredFromSession.current = false;
-      setExercises(programDayToWorkout(program[selectedDay]));
-      setWorkoutStarted(false);
+      // Reset exercises to a clean template for the same day; persist effect clears localStorage.
+      setSession(s => s ? {
+        ...s,
+        exercises: programDayToWorkout(program[s.selectedDay]),
+        workoutStarted: false,
+      } : s);
     } catch {
       setStatus('Error saving workout');
     } finally {
@@ -352,18 +371,15 @@ export default function Log() {
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `ironlogs-${date}.csv`;
+    a.href = url; a.download = `ironlogs-${session?.date || todayISO()}.csv`;
     a.click(); URL.revokeObjectURL(url);
-    // Clear IndexedDB after successful export
     await clearLocalLifts();
     await refreshLocalLifts();
-    clearSession();
-    restoredFromSession.current = false;
     setStatus('Exported & local data cleared');
     setTimeout(() => setStatus(''), 3000);
   };
 
-  if (loading) {
+  if (loading || !session) {
     return (
       <div>
         <div className="skeleton w-[200px] h-8 mb-4" />
@@ -372,6 +388,7 @@ export default function Log() {
     );
   }
 
+  const { selectedDay, exercises, date, bodyweight, sleep, workoutStarted } = session;
   const totalCompleted = exercises.reduce((sum, ex) => sum + ex.sets.filter(s => s.done).length, 0);
   const totalSets = exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
 
@@ -400,7 +417,7 @@ export default function Log() {
           return (
           <button
             key={i}
-            onClick={() => { restoredFromSession.current = false; clearSession(); setSelectedDay(i); }}
+            onClick={() => selectDay(i)}
             className={`px-2.5 py-1 rounded-md text-xs font-semibold border cursor-pointer transition-colors ${
               i === selectedDay
                 ? 'border-accent bg-accent-glow text-accent'
@@ -417,15 +434,15 @@ export default function Log() {
       <div className="flex gap-3 mb-5">
         <div className="flex-1">
           <label className="text-[0.7rem] text-text-muted uppercase tracking-wider">Date</label>
-          <input type="date" value={date} onChange={e => setDate(e.target.value)} className="input-field" />
+          <input type="date" value={date} onChange={e => setField('date', e.target.value)} className="input-field" />
         </div>
         <div className="flex-1">
           <label className="text-[0.7rem] text-text-muted uppercase tracking-wider">Bodyweight (kg)</label>
-          <input type="number" step="0.1" value={bodyweight} onChange={e => setBodyweight(e.target.value)} placeholder="e.g. 81.5" className="input-field" />
+          <input type="number" step="0.1" value={bodyweight} onChange={e => setField('bodyweight', e.target.value)} placeholder="e.g. 81.5" className="input-field" />
         </div>
         <div className="w-20">
           <label className="text-[0.7rem] text-text-muted uppercase tracking-wider">Sleep (h)</label>
-          <input type="number" step="0.5" min="0" max="16" value={sleep} onChange={e => setSleep(e.target.value)} placeholder="7.5" className="input-field" />
+          <input type="number" step="0.5" min="0" max="16" value={sleep} onChange={e => setField('sleep', e.target.value)} placeholder="7.5" className="input-field" />
         </div>
       </div>
 
