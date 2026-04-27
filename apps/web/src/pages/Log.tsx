@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { addLift, exportLiftsAsCSV, clearLocalLifts } from '../lib/storage';
 import { normalizeLiftName } from '../lib/scoring';
 import { useLifts, groupByDay, calcWeeklyStreak } from '../lib/useLifts';
@@ -207,7 +207,7 @@ export default function Log() {
   const [saving, setSaving] = useState(false);
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [showAddExercise, setShowAddExercise] = useState(false);
-  const [restoredFromSession, setRestoredFromSession] = useState(false);
+  const restoredFromSession = useRef(false);
   const [celebration, setCelebration] = useState<{
     sets: number; xpGained: number; xpBefore: number; xpAfter: number;
     levelBefore: number; levelAfter: number; progressBefore: number; progressAfter: number; streak: number;
@@ -218,23 +218,23 @@ export default function Log() {
     if (loading) return;
     const saved = loadSession();
     if (saved && saved.workoutStarted) {
+      restoredFromSession.current = true;
       setSelectedDay(saved.selectedDay);
       setExercises(saved.exercises);
       setBodyweight(saved.bodyweight);
       setSleep(saved.sleep);
       setDate(saved.date);
       setWorkoutStarted(true);
-      setRestoredFromSession(true);
     } else {
       setSelectedDay(detectNextDay(entries, program));
     }
   }, [program, entries, loading]);
 
   useEffect(() => {
-    if (restoredFromSession) return;
+    if (restoredFromSession.current) return;
     setExercises(programDayToWorkout(program[selectedDay]));
     setWorkoutStarted(false);
-  }, [program, selectedDay, restoredFromSession]);
+  }, [program, selectedDay]);
 
   // Persist workout state on every change
   useEffect(() => {
@@ -336,7 +336,7 @@ export default function Log() {
 
       // Reset page state
       clearSession();
-      setRestoredFromSession(false);
+      restoredFromSession.current = false;
       setExercises(programDayToWorkout(program[selectedDay]));
       setWorkoutStarted(false);
     } catch {
@@ -358,7 +358,7 @@ export default function Log() {
     await clearLocalLifts();
     await refreshLocalLifts();
     clearSession();
-    setRestoredFromSession(false);
+    restoredFromSession.current = false;
     setStatus('Exported & local data cleared');
     setTimeout(() => setStatus(''), 3000);
   };
@@ -400,7 +400,7 @@ export default function Log() {
           return (
           <button
             key={i}
-            onClick={() => { setRestoredFromSession(false); clearSession(); setSelectedDay(i); }}
+            onClick={() => { restoredFromSession.current = false; clearSession(); setSelectedDay(i); }}
             className={`px-2.5 py-1 rounded-md text-xs font-semibold border cursor-pointer transition-colors ${
               i === selectedDay
                 ? 'border-accent bg-accent-glow text-accent'
