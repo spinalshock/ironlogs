@@ -616,3 +616,30 @@ date,bodyweight,lift,weight,reps,set_type,notes,sleep
 2026-04-27,79.05,cgbench,40,4,t2,,6
 2026-04-27,79.05,cgbench,40,6,t2,,6
 2026-04-27,79.05,cgbench,40,8,t2,,6
+2026-04-28,79.15,deadlift,90,5,t1,,7
+2026-04-28,79.15,deadlift,100,3,t1,,7
+2026-04-28,79.15,deadlift,110,3,t1_amrap,programmed 1+,7
+2026-04-28,79.15,deadlift,105,3,t1,,7
+2026-04-28,79.15,deadlift,100,3,t1,,7
+2026-04-28,79.15,deadlift,95,3,t1,,7
+2026-04-28,79.15,deadlift,90,3,t1,,7
+2026-04-28,79.15,deadlift,80,3,t1,,7
+2026-04-28,79.15,farmers_walk,40,1,accessory,half lap x2,7
+2026-04-28,79.15,farmers_walk,40,1,accessory,half lap x2,7
+2026-04-29,79,ohp,40,5,t1,,7.5
+2026-04-29,79,ohp,45,3,t1,,7.5
+2026-04-29,79,ohp,50,4,t1_amrap,programmed 1+,7.5
+2026-04-29,79,ohp,50,2,t1,,7.5
+2026-04-29,79,ohp,45,3,t1,,7.5
+2026-04-29,79,ohp,45,3,t1,,7.5
+2026-04-29,79,ohp,40,5,t1,,7.5
+2026-04-29,79,ohp,40,5,t1,,7.5
+2026-04-29,79,ohp,35,6,t1_amrap,programmed 5+,7.5
+2026-04-29,79,incline_bench,30,6,t2,,7.5
+2026-04-29,79,incline_bench,35,5,t2,,7.5
+2026-04-29,79,incline_bench,40,3,t2,,7.5
+2026-04-29,79,incline_bench,40,5,t2,,7.5
+2026-04-29,79,incline_bench,45,7,t2,,7.5
+2026-04-29,79,incline_bench,40,4,t2,,7.5
+2026-04-29,79,incline_bench,45,6,t2,,7.5
+2026-04-29,79,incline_bench,40,8,t2,,7.5
